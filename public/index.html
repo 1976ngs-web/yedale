@@ -1340,7 +1340,7 @@ var last=0,dustOn=true;(function tick(t){if(!dustOn)return;if(!document.hidden&&
 /* ---- שלבים ---- */
 var stage=0,idx=0,busy=false;
 var seen=false;try{seen=!!localStorage.getItem('lw-intro-seen')}catch(e){}
-if(seen)$('skip').style.display='block';
+$('skip').style.display='block';
 function setHint(){hint.classList.remove('on')}
 
 function placeAngled(far){
