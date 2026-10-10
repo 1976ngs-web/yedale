@@ -2266,17 +2266,18 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   /* ---- שליטה ---- */
   turn:function(k){var G=this;ac();var last=G.dq.length?G.dq[G.dq.length-1]:G.dir;if(k===last&&G.started)return;if(G.started&&k===CT_OPP[last])return;
    if(!G.started){G.started=true;var go=$('ctGo');if(go)go.style.opacity=0;G.dir=k;G.dq=[];if(k==='r')G.flip=1;else if(k==='l')G.flip=-1;G.retrail();return}
-   if(G.dq.length<2)G.dq.push(k)},
+   if(!G.ended&&!G.dq.length&&k!==G.dir&&k!==CT_OPP[G.dir]&&G.acc<.4&&G.pb&&!G.pate){G.body=G.pb.map(function(p){return p.slice()});G.dir=k;G.step();return}
+   if(G.dq.length)G.dq[G.dq.length-1]=k;else G.dq.push(k)},
   occ:function(x,y,skipTail){var b=this.body,n=b.length-(skipTail?1:0);for(var i=1;i<n;i++)if(b[i][0]===x&&b[i][1]===y)return true;return false},
   inb:function(x,y){return x>=0&&y>=0&&x<this.cols&&y<this.rows},
-  step:function(){var G=this;if(G.dq.length)G.dir=G.dq.shift();var h=G.body[0],d=CT_DIR[G.dir],nx=h[0]+d[0],ny=h[1]+d[1];
+  step:function(){var G=this;G.pb=G.body.map(function(p){return p.slice()});G.pate=false;if(G.dq.length)G.dir=G.dq.shift();var h=G.body[0],d=CT_DIR[G.dir],nx=h[0]+d[0],ny=h[1]+d[1];
    if(!G.inb(nx,ny)||G.occ(nx,ny,true)){var tg=G.target(),opts=['u','d','l','r'].filter(function(k){return k!==CT_OPP[G.dir]}),best=null,bs=-1e9;
     opts.forEach(function(k){var q=CT_DIR[k],x=h[0]+q[0],y=h[1]+q[1];if(!G.inb(x,y))return;var sc=(G.occ(x,y,true)?-50:0)+G.room(x,y,k)*2;if(tg)sc-=(Math.abs(tg.x-x)+Math.abs(tg.y-y))*.6;if(sc>bs){bs=sc;best=k}});
     if(!best){opts=['u','d','l','r'].filter(function(k){var q=CT_DIR[k];return G.inb(h[0]+q[0],h[1]+q[1])});best=opts[0]}
     G.dir=best;G.dq=[];d=CT_DIR[best];nx=h[0]+d[0];ny=h[1]+d[1]}
    G.from=G.body.map(function(p){return p.slice()});G.body.unshift([nx,ny]);if(G.body.length>G.glen())G.body.pop();else G.from.push(G.from[G.from.length-1].slice());
    if(G.dir==='r')G.flip=1;else if(G.dir==='l')G.flip=-1;
-   for(var i=0;i<G.drops.length;i++){var dr=G.drops[i];if(dr.st==='on'&&dr.x===nx&&dr.y===ny){G.eat(dr);break}}},
+   for(var i=0;i<G.drops.length;i++){var dr=G.drops[i];if(dr.st==='on'&&dr.x===nx&&dr.y===ny){G.pate=true;G.eat(dr);break}}},
   room:function(x,y,k){var q=CT_DIR[k],n=0;while(this.inb(x,y)&&n<6){n++;x+=q[0];y+=q[1]}return n},
   target:function(){var d=this.drops;for(var i=0;i<d.length;i++)if(d[i].ok&&d[i].st==='on')return d[i];return null},
   free:function(minD){var G=this,h=G.body[0],c=[],ahead=CT_DIR[G.dir];for(var y=0;y<G.rows;y++)for(var x=0;x<G.cols;x++){if(G.occ(x,y)||(h[0]===x&&h[1]===y))continue;if(Math.abs(x-h[0])+Math.abs(y-h[1])<minD)continue;
