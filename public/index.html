@@ -2231,7 +2231,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   live:function(s){return this.alive&&this.sid===s},
   repeat:function(){var G=this;if(G.q)G.say()},
   deck:function(a,o){return BRIDGE.deck.call(this,a,o)},take:function(x){return BRIDGE.take.call(this,x)},
-  speed:function(){return {prep:2.5,a:2.7,b:2.7}[this.lv]||2.6},
+  speed:function(){return {prep:1.9,a:2.1,b:2.1}[this.lv]||2},
   /* ---- פריסה ---- */
   resize:function(){var G=this,land=W>H*1.05,top=Math.max(58,H*.09),pb,cols0,rows0,bx,by,bw,bh;G.land=land;
    var big=G.lv==='b';
@@ -2293,7 +2293,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
     var pool=S.filter(function(x){return x!==t2&&x[1]!==t2[1]&&!(ctBase(x[0])[0]!==L&&sameSnd(ctBase(x[0])[0],L)&&x[2]===t2[2])}),sameL=shuf(pool.filter(function(x){return ctBase(x[0])[0]===L})),sameV=shuf(pool.filter(function(x){return x[2]===t2[2]&&!sameSnd(ctBase(x[0])[0],L)})),ds2=[];
     if(sameL[0])ds2.push(sameL[0]);if(sameV[0])ds2.push(sameV[0]);shuf(pool).forEach(function(x){if(ds2.length<n&&ds2.indexOf(x)<0)ds2.push(x)});ds2=ds2.slice(0,n);
     r={key:t2[0],show:t2[0],say:t2[1],opts:[t2[0]].concat(ds2.map(function(x){return x[0]}))}}
-   else{var B=(F.bw||[]).filter(function(x){return ctBase(x[0]).length<=4});var t3=B[+G.deck(B.map(function(x,i){return String(i)}))],b3=ctBase(t3[0]);
+   else{var mxL=G.cs>=58?5:4,B=(F.bw||[]).filter(function(x){return ctBase(x[0]).length<=mxL});var w3=G.deck(B.map(function(x){return x[0]})),t3=B.filter(function(x){return x[0]===w3})[0]||B[0],b3=ctBase(t3[0]);
     var pl=B.filter(function(x){return x!==t3&&ctBase(x[0])!==b3}),f1=shuf(pl.filter(function(x){return ctBase(x[0])[0]===b3[0]})),f2=shuf(pl.filter(function(x){return ctBase(x[0]).length===b3.length})),ds3=[];
     f1.concat(f2,shuf(pl.slice())).forEach(function(x){if(ds3.length<n&&ds3.indexOf(x)<0)ds3.push(x)});
     r={key:t3[0],show:t3[0],say:t3[1],opts:[t3[0]].concat(ds3.map(function(x){return x[0]}))}}
