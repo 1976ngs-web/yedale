@@ -887,6 +887,7 @@ window.LW=(function(){
      L:[[.075,.24],[.173,.34],[.233,.155],[.636,.415],[.695,.32],[.846,.186]]}
  };
  var SEL=function(){return innerWidth>innerHeight*1.05?'W':'T'};
+ var RACE_ON=(function(){try{if(/[?&]race/.test(location.search))localStorage.setItem('lw-race','1');return localStorage.getItem('lw-race')==='1'}catch(e){return false}})();
  /* ---- צלילים קטנים ---- */
  var AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
  function fxv(){var p=LW.profile();return p&&p.vol?p.vol.fx:.8}
@@ -1037,7 +1038,7 @@ window.LW=(function(){
    '<button class="isS on" data-g="ff" style="'+P2(p.lant)+'" aria-label="גחליליות"><i></i><i class="r2"></i></button>'
   +'<button class="isS on" data-g="wheel" style="'+P2(p.wheel)+'" aria-label="גלגל המים"><i></i><i class="r2"></i></button>'
   +'<button class="isS on soon" data-g="bridge" style="'+P2(p.bridge)+'" aria-label="הגשר"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="boss" style="'+P2(p.door)+'" aria-label="טירת השילובים"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="cave" style="'+P2(p.mush)+'" aria-label="מערת הקריסטלים"><i></i><i class="r2"></i></button>'
-  +'<button class="isS on" data-g="cat" style="'+P2(p.cat)+'" aria-label="הזחל הרעב"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="race" style="'+P2(p.race)+'" aria-label="מרוץ הינשוף"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="lib" style="'+P2(p.lib)+'" aria-label="הספרייה"><i></i><i class="r2"></i></button>'
+  +'<button class="isS on" data-g="cat" style="'+P2(p.cat)+'" aria-label="הזחל הרעב"><i></i><i class="r2"></i></button>'+(RACE_ON?'<button class="isS on" data-g="race" style="'+P2(p.race)+'" aria-label="מרוץ הינשוף"><i></i><i class="r2"></i></button>':'')+'<button class="isS on" data-g="lib" style="'+P2(p.lib)+'" aria-label="הספרייה"><i></i><i class="r2"></i></button>'
   +'<button class="isS owl" data-g="owl" style="'+P2(p.owl)+'" aria-label="הינשוף"></button>';
   Array.prototype.forEach.call(stL.querySelectorAll('.isS'),function(b){b.onclick=function(e){e.stopPropagation();var k=b.getAttribute('data-g');
    if(k==='owl')say('שלום! אני הינשוף החכם. בכל מקום שזוהר על האי מחכה משחק. געו בפנסים, ונתחיל!');
@@ -2467,7 +2468,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   say:function(cb){var G=this;if(!G.q){if(cb)cb();return}if(G.q.say)word(G.q.say,cb);else if(cb)setTimeout(cb,300)},
   showCard:function(){var G=this,q=$('rcQ');if(!q)return;if(G.q&&G.q.pic){q.innerHTML='<div class="rc-card"><img src="pics/'+G.q.pic+'.webp" alt="" draggable="false"></div>'}else q.innerHTML=''},
   newQ:function(){var G=this,sid=G.sid;if(!G.live(sid)||G.ended)return;G.q=G.pick();G.tries=0;G.showCard();G.spawn();tone([660,880],.25,'sine',.05,.08);
-   setTimeout(function(){if(!G.live(sid))return;G.say();if(!G.hinted){var go=$('rcGo');if(go){go.textContent='לחצו על השער, או על החצים';go.style.top=(G.Yc-G.L*.62-Math.max(34,H*.06))+'px';go.style.opacity=1}}},450)},
+   setTimeout(function(){if(!G.live(sid))return;G.say();if(!G.hinted){var go=$('rcGo');if(go){go.textContent='לחצו על השער, או על החצים';var qc=document.querySelector('#rcQ .rc-card'),qr=qc?qc.getBoundingClientRect():null;go.style.top=((qr&&qr.height?qr.bottom:52)+12)+'px';go.style.opacity=1}}},450)},
   spawn:function(){var G=this,q=G.q,lanes=shuf([-1,0,1]),opts=q.opts.map(function(o,i){return {t:o,ok:i===0}}),grp=(G.grp=(G.grp||0)+1);
    shuf(opts).forEach(function(o,i){G.gates.push({lane:lanes[i],t:o.t,ok:o.ok,d:G.d0+11,kind:q.sign,grp:grp,hint:G.tries>=2&&o.ok,ph:Math.random()*6,res:false})})},
   /* ---- מעבר בשער ---- */
@@ -2487,7 +2488,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
    G.gates.push({lane:l,t:'',ok:true,d:G.d0+9,kind:'garch',grp:-1,ph:0,res:false,gold:true});tone([1047,1319,1568,2093],.5,'sine',.06,.08)},
   goldPass:function(gt){var G=this,cb=G.goldCb;G.goldCb=null;gt.res=true;if(gt.lane===G.lane){G.bonus+=2;gt.win=1;G.boostT=1.6;var x=G.sx(gt.lane-G.X*G.cf,1),y=G.sy(1)-G.L*1.1;burst(x,y,80,['255,236,150','255,255,255','255,215,90'],360);tone([1047,1319,1568,2093,2637],.9,'sine',.12,.07);if(window.VO)VO.cheer('ok',function(){});}
    setTimeout(function(){if(cb)cb()},gt.lane===G.lane?1300:500)},
-  finish:function(){var G=this,sid=G.sid;G.ended=true;G.lane=0;G.st.d.done=(G.st.d.done||0)+1;G.st.d.seen=1;G.st.save();G.waveT=0.001;var q=$('rcQ');if(q)q.innerHTML='';
+  finish:function(){var G=this,sid=G.sid;G.ended=true;G.lane=0;Array.prototype.forEach.call(UI.querySelectorAll('.rcArw'),function(b){b.style.display='none'});G.st.d.done=(G.st.d.done||0)+1;G.st.d.seen=1;G.st.save();G.waveT=0.001;var q=$('rcQ');if(q)q.innerHTML='';
    setTimeout(function(){if(!G.live(sid))return;tone([523,659,784,1047,1319,1568],1.2,'sine',.15,.11);for(var i=0;i<70;i++)sp(W/2+(Math.random()-.5)*G.L*1.6,G.sy(1)-G.L*.6+(Math.random()-.5)*G.L,260,['255,236,150','255,255,255','255,190,90','255,170,220'],true);
     earn(20+G.bonus);if(window.BUNNY)BUNNY.pose('dance',3);speak('כָּל הַכָּבוֹד! הַיַּנְשׁוּף הִגִּיעַ עַד הַסּוֹף, וְקִבַּלְתֶּם אֲבַק כּוֹכָבִים!');
     endButtons(function(){UI.innerHTML='';G.start()})},1200)},
