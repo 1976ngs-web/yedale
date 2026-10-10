@@ -379,7 +379,7 @@ body.isleOn #lwGear,body.isleOn #lwBtlSm,body.isleOn #lwBig{display:none!importa
 .isStage{position:absolute}
 .isStage.zin{animation:iszin 1.4s cubic-bezier(.2,.7,.3,1)}
 @keyframes iszin{from{transform:scale(1.18);filter:blur(6px) brightness(1.3)}to{transform:none;filter:none}}
-.isBg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.isBg{position:absolute;inset:0;width:100%;height:100%;display:block} .isBlur{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(18px) brightness(.8) saturate(1.1);pointer-events:none}
 .isNight{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.6s,background 2s;
  background:radial-gradient(ellipse at 50% 45%,rgba(20,30,80,.35),rgba(6,10,40,.82) 75%),linear-gradient(rgba(10,20,70,.55),rgba(5,10,35,.7))}
 .isNight.on{opacity:1}
@@ -935,7 +935,7 @@ window.LW=(function(){
  function targets(s,n){return fTargets(s,n)}
  /* ---- בניית המסך ---- */
  var root=document.createElement('div');root.id='isle';root.innerHTML=
-  '<div class="isStage" id="isStage"><img class="isBg" id="isBg" alt=""><img class="isOwlM" id="isOwlB" alt=""><img class="isOwlM" id="isOwlM" alt=""><div class="isNight" id="isNight"></div><div id="isLan"></div><div id="isFF"></div><div id="isSt"></div></div>'
+  '<div class="isBlur" id="isBlur"></div><div class="isStage" id="isStage"><img class="isBg" id="isBg" alt=""><img class="isOwlM" id="isOwlB" alt=""><img class="isOwlM" id="isOwlM" alt=""><div class="isNight" id="isNight"></div><div id="isLan"></div><div id="isFF"></div><div id="isSt"></div></div>'
   +'<canvas id="isCv"></canvas>'
   +'<button class="isBtn isBack" id="isBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>'
   +'<div class="isStar" id="isStar"><span>★</span><b id="isCoins">0</b></div>'
@@ -1024,8 +1024,8 @@ window.LW=(function(){
  function sfArrive(tg,per){sfShown=Math.min(sfTo,sfShown+per);$('isCoins').textContent=Math.round(sfShown);for(var i=0;i<22;i++)sfDust(tg[0],tg[1],260,true);
   var e=$('isStar');if(e){e.classList.remove('sfpop');void e.offsetWidth;e.classList.add('sfpop','sfglow')}
   try{var f=880*Math.pow(2,(sfTick++%10)/12);tone([f,f*1.5,f*2],.3,'sine',.06,.03)}catch(_){}}
- function layout(){cur=SEL();var n=NAT[cur],s=Math.max(innerWidth/n[0],innerHeight/n[1]);sw=n[0]*s;sh=n[1]*s;
-  var bk=(mode==='lib'?'L':'')+cur;if(bg.getAttribute('data-k')!==bk){bg.src=mode==='lib'?LIBI[cur]:IMG[cur];bg.setAttribute('data-k',bk)}
+ function layout(){cur=SEL();var n=NAT[cur],s=Math.max(innerWidth/n[0],innerHeight/n[1]);s=Math.min(s,innerWidth/(n[0]*.9),innerHeight/(n[1]*.9));sw=n[0]*s;sh=n[1]*s;
+  var bk=(mode==='lib'?'L':'')+cur;if(bg.getAttribute('data-k')!==bk){bg.src=mode==='lib'?LIBI[cur]:IMG[cur];bg.setAttribute('data-k',bk);var bl=$('isBlur');if(bl)bl.style.backgroundImage='url("'+bg.src+'")'}
   var om=$('isOwlM'),od=mode==='lib'?LOWL[cur]:OWLM[cur];if(od){var nn=NAT[cur];om.src=od.src;om.style.cssText='left:'+(od.box[0]/nn[0]*100)+'%;top:'+(od.box[1]/nn[1]*100)+'%;width:'+((od.box[2]-od.box[0])/nn[0]*100)+'%;height:'+((od.box[3]-od.box[1])/nn[1]*100)+'%';om.dataset.ok='1';var ob=$('isOwlB');if(od.blink){ob.src=od.blink;var bx=od.bbox||od.box;ob.style.cssText='left:'+(bx[0]/nn[0]*100)+'%;top:'+(bx[1]/nn[1]*100)+'%;width:'+((bx[2]-bx[0])/nn[0]*100)+'%;height:'+((bx[3]-bx[1])/nn[1]*100)+'%';ob.dataset.ok='1'}else{ob.dataset.ok='';ob.style.display='none'}}else{om.dataset.ok='';om.style.display='none'}
   stage.style.cssText='width:'+sw+'px;height:'+sh+'px;left:'+(innerWidth-sw)/2+'px;top:'+(innerHeight-sh)/2+'px';
   var d=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*d;cv.height=innerHeight*d;g.setTransform(d,0,0,d,0,0);
