@@ -2141,17 +2141,19 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
    else{G.streak=0;G.miss++;soft();G.owl('smirk',true);
     setTimeout(function(){if(!G.live(sid))return;[a,b].forEach(function(c){c.el.classList.remove('open');c.el.classList.add('no');setTimeout(function(){if(c.el){c.el.classList.remove('no');if(!c.done)c.el.classList.add('idle')}},560)});
      G.open=[];G.checking=false;G.busy=false;G.owl(G.ownState)},1300)}},
-  pour:function(cs,cb){var G=this,sid=G.sid,o=G.owlR,n=0,tx=o[0]+o[2]*.5,ty=o[1]+o[2]*.28;
-   cs.forEach(function(c,i){setTimeout(function(){if(!G.live(sid))return;var e=c.el,r=e.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
-     var fly=document.createElement('img');fly.src=WHP+'wh_bk.webp';fly.alt='';fly.style.cssText='position:absolute;z-index:5;pointer-events:none;object-fit:contain;left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;filter:drop-shadow(0 6px 8px rgba(30,15,0,.45))';UI.appendChild(fly);
-     var side=(i?1:-1)*(G.o==='T'?1:1),dx=tx+side*o[2]*.32-cx,dy=ty-o[2]*.45-cy,sc=Math.max(.8,Math.min(1.6,o[2]*.55/r.width));
-     var an=null;try{an=fly.animate([{transform:'translate(0,0) scale(1)'},{transform:'translate('+dx*.5+'px,'+(dy*.5-Math.min(W,H)*.12)+'px) scale('+((1+sc)/2)+') rotate('+(side*-10)+'deg)',offset:.5},{transform:'translate('+dx+'px,'+dy+'px) scale('+sc+')'}],{duration:620,easing:'cubic-bezier(.45,0,.35,1)',fill:'forwards'})}catch(err){}
-     var tip=function(){if(!G.live(sid)){fly.remove();return}var fr=['wh_p1','wh_p2','wh_p3'],f=0;
-      var step=function(){if(!G.live(sid)){fly.remove();return}if(f<fr.length){fly.src=WHP+fr[f]+'.webp';if(side>0&&f===0)fly.style.scale='-1 1';f++;if(f===1)splash();
-        for(var q=0;q<14;q++)sp(tx+(Math.random()-.5)*o[2]*.3,ty+o[2]*.1,130,['255,255,255','190,240,255','120,210,255'],Math.random()<.4);setTimeout(step,170)}
-       else{fly.style.transition='opacity .26s';fly.style.opacity=0;setTimeout(function(){fly.remove()},280);G.owl(G.found===Math.ceil(G.items.length/2)?'dive':'laugh',true);burst(tx,ty+o[2]*.15,26,['255,255,255','200,240,255','150,220,255'],240);if(++n===cs.length)setTimeout(cb,420)}};
-      step()};
-     if(an&&an.finished)an.finished.then(tip,tip);else setTimeout(tip,620)},i*260)})},
+  pour:function(cs,cb){var G=this,sid=G.sid,o=G.owlR,bw=G.bw||80,tx=o[0]+o[2]*.5,ty=o[1]+o[2]*.52,done=false;
+   var end=function(){if(done)return;done=true;cb()};
+   cs.forEach(function(c,i){var r=c.el.getBoundingClientRect();setTimeout(function(){if(G.live(sid))bolt(r.left+r.width/2,r.top+r.height*.35,tx,ty,['255,255,255','190,240,255','120,210,255'],null,.5)},i*130)});
+   setTimeout(function(){if(!G.live(sid))return;var mir=tx<W/2,pw=Math.max(bw*1.75,110),ph=pw*414/380;
+    var im=document.createElement('img');im.alt='';im.src=WHP+'wh_p1.webp';
+    var lx=mir?tx-pw*.28:tx-pw*.72,ly=ty-ph*.9;
+    im.style.cssText='position:absolute;z-index:5;pointer-events:none;object-fit:contain;left:'+lx+'px;top:'+ly+'px;width:'+pw+'px;height:'+ph+'px;transform-origin:'+(mir?'70%':'30%')+' 30%;filter:drop-shadow(0 8px 10px rgba(30,15,0,.45));opacity:0;transform:'+(mir?'scaleX(-1) ':'')+'rotate(-18deg) scale(.7);transition:opacity .2s,transform .35s cubic-bezier(.3,1.4,.5,1)';
+    UI.appendChild(im);void im.offsetWidth;im.style.opacity=1;im.style.transform=(mir?'scaleX(-1) ':'')+'rotate(0) scale(1)';
+    var fr=['wh_p1','wh_p2','wh_p3'];
+    fr.forEach(function(f,k){setTimeout(function(){if(!G.live(sid)){im.remove();return}im.src=WHP+f+'.webp';if(k===1){splash();if(G.owlShown)G.owl('laugh',true)}
+     for(var q=0;q<18;q++)sp(tx+(Math.random()-.5)*o[2]*.35,ty-o[2]*.05,150,['255,255,255','190,240,255','120,210,255'],Math.random()<.4)},180+k*230)});
+    setTimeout(function(){if(!G.live(sid)){im.remove();return}burst(tx,ty,24,['255,255,255','200,240,255','150,220,255'],230);im.style.opacity=0;im.style.transform=(mir?'scaleX(-1) ':'')+'rotate(10deg) scale(.85) translateY(-14px)';setTimeout(function(){im.remove()},300);setTimeout(end,250)},1050)},430);
+   setTimeout(function(){if(G.live(sid))end()},3000)},
   react:function(){var G=this,sid=G.sid,N=G.items.length,k=G.found,mid=Math.ceil(N/2);
    if(k===mid&&!G.owlShown){G.diveLater=true;G.peek();return}
    if(!G.owlShown){G.peek();return}
