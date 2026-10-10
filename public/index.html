@@ -2341,7 +2341,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
    /* הזחל: חוליות לאורך המסלול, צמודות זו לזו */
    var B=G.body,F=G.from,mv=G.started&&!G.ended,SP=.5;
    var hx=F[0][0]+(B[0][0]-F[0][0])*e,hy=F[0][1]+(B[0][1]-F[0][1])*e,TR=G.trail;
-   if(!TR.length||Math.abs(TR[0][0]-hx)+Math.abs(TR[0][1]-hy)>.03)TR.unshift([hx,hy]);else{TR[0][0]=hx;TR[0][1]=hy}
+   if(TR.length<2||Math.abs(TR[1][0]-hx)+Math.abs(TR[1][1]-hy)>.05)TR.unshift([hx,hy]);else{TR[0][0]=hx;TR[0][1]=hy}
    var need=(G.nv+2)*SP+1.5,tot=0;for(var z=1;z<TR.length;z++){tot+=Math.hypot(TR[z][0]-TR[z-1][0],TR[z][1]-TR[z-1][1]);if(tot>need){TR.length=z+1;break}}
    var at=function(d){var acc=0;for(var z=1;z<TR.length;z++){var a=TR[z-1],b=TR[z],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(acc+l>=d&&l>0){var u=(d-acc)/l;return [a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u]}acc+=l}var L=TR[TR.length-1],P=TR.length>1?TR[TR.length-2]:[L[0]+1,L[1]],ln=Math.hypot(L[0]-P[0],L[1]-P[1])||1,ex=d-acc;return [L[0]+(L[0]-P[0])/ln*ex,L[1]+(L[1]-P[1])/ln*ex]};
    var tgA={r:0,l:0,u:-.42,d:.42}[G.dir];if(!G.started)tgA=0;G.ang+=(tgA-G.ang)*Math.min(1,dt*9);G.flipV+=(G.flip-G.flipV)*Math.min(1,dt*12);
