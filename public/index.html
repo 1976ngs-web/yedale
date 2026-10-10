@@ -2503,9 +2503,9 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
    g.save();g.globalAlpha=al;
    if(gt.hint||gt.gold||gt.win){var pu=.5+.5*Math.sin(t*6+gt.ph),cy0=by-h*.6,rr=w*(gt.gold?.85:.75);g.globalCompositeOperation='lighter';var rg=g.createRadialGradient(x,cy0,rr*.1,x,cy0,rr);rg.addColorStop(0,'rgba(255,230,150,'+((gt.win?.55:.35)*(.6+.4*pu))+')');rg.addColorStop(1,'rgba(255,200,90,0)');g.fillStyle=rg;g.beginPath();g.arc(x,cy0,rr,0,7);g.fill();g.globalCompositeOperation='source-over'}
    g.drawImage(im,x-w/2,by-h,w,h);gt.box=[x-w/2,by-h,x+w/2,by];
-   var SK=gt.t?(gt.kind==='rarch'?1.4:1.22):1,sc=gt.t?G.signC(gt.kind):null;if(sc){var S0=RC_SIGN[gt.kind],scx=x+(S0.c[0]-.5)*w,scy=by-h+S0.c[1]*h,sw2=sc.fw*w*SK,sh2=sw2*sc.height/sc.width;g.drawImage(sc,scx-sw2*sc.ax,scy-sh2*sc.ay,sw2,sh2)}
-   if(gt.t){var S=RC_SIGN[gt.kind],tx=x+(S.c[0]-.5)*w,ty=by-h+S.c[1]*h,fs,mw;g.direction='rtl';g.textAlign='center';g.textBaseline='middle';
-    if(gt.kind==='rarch'){var r=S.r*w*SK;fs=r*(brBase(gt.t).length>1?1.05:1.4);mw=r*1.75}else{fs=S.h*h*SK*1.0;mw=S.w*w*SK*.95}
+   var rr=gt.kind==='rarch',SK=gt.t?(rr?1.65:1.22):1,EY=rr?1.45:1,sc=gt.t?G.signC(gt.kind):null,tcx=0,tcy=0;if(sc){var S0=RC_SIGN[gt.kind],scx=x+(S0.c[0]-.5)*w,scy=by-h+S0.c[1]*h,sw2=sc.fw*w*SK,sh0=sw2*sc.height/sc.width,sh2=sh0*EY,top=scy-sh0*sc.ay;g.drawImage(sc,scx-sw2*sc.ax,top,sw2,sh2);tcx=scx;tcy=top+sh2*sc.ay}
+   if(gt.t){var S=RC_SIGN[gt.kind],tx=tcx||x+(S.c[0]-.5)*w,ty=tcy||by-h+S.c[1]*h,fs,mw;g.direction='rtl';g.textAlign='center';g.textBaseline='middle';
+    if(gt.kind==='rarch'){var r=S.r*w*SK;fs=r*EY*(brBase(gt.t).length>1?1.12:1.4);mw=r*1.72}else{fs=S.h*h*SK*1.0;mw=S.w*w*SK*.95}
     g.font='900 '+fs+'px "Frank Ruhl Libre","David",serif';var tw=g.measureText(gt.t).width;if(tw>mw){fs*=mw/tw;g.font='900 '+fs+'px "Frank Ruhl Libre","David",serif'}
     var oy=fs*(gt.kind==='rarch'?.06:.04);g.fillStyle='rgba(255,250,230,.55)';g.fillText(gt.t,tx,ty+oy+Math.max(1,fs*.035));g.fillStyle=gt.win?'#7a3c00':'#2a1204';g.fillText(gt.t,tx,ty+oy)}
    g.restore();
