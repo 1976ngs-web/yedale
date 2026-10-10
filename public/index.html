@@ -2316,7 +2316,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
     if(G.tries>=2){var t=G.target();if(t)t.hint=true;if(window.BUNNY)BUNNY.pose('think',2.2)}}},
   finish:function(){var G=this,sid=G.sid;G.ended=true;G.st.d.done=(G.st.d.done||0)+1;G.st.d.seen=1;G.st.save();G.face='c';G.faceT=99;
    G.body.forEach(function(p,i){setTimeout(function(){if(!G.live(sid))return;burst(G.cx(p[0]),G.cy(p[1]),20,['255,236,150','255,255,255','255,190,90'],220);tone([523*Math.pow(2,(i%12)/12)],.2,'sine',.05)},200+i*90)});
-   setTimeout(function(){if(!G.live(sid))return;tone([523,659,784,1047,1319,1568],1.2,'sine',.15,.11);earn(10);if(window.BUNNY)BUNNY.pose('dance',3);speak('כָּל הַכָּבוֹד! הַזַּחַל שָׂבֵעַ וּמְאֻשָּׁר, וְקִבַּלְתֶּם אֲבַק כּוֹכָבִים!');
+   setTimeout(function(){if(!G.live(sid))return;tone([523,659,784,1047,1319,1568],1.2,'sine',.15,.11);earn(20);if(window.BUNNY)BUNNY.pose('dance',3);speak('כָּל הַכָּבוֹד! הַזַּחַל שָׂבֵעַ וּמְאֻשָּׁר, וְקִבַּלְתֶּם אֲבַק כּוֹכָבִים!');
     endButtons(function(){UI.innerHTML='';G.start()})},400+G.body.length*90)},
   /* ---- ציור ---- */
   frame:function(dt,t){var G=this;if(!G.cs)return;if(G.boardDirty)G.drawBoard();else if(!G._bgok){var b=ctImg('bgW');if(ctOk(b)){G._bgok=1;G.boardDirty=true}}
