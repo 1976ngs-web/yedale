@@ -2410,7 +2410,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   live:function(s){return this.alive&&this.sid===s},
   repeat:function(){var G=this;if(G.q)G.say()},
   deck:function(a,o){return BRIDGE.deck.call(this,a,o)},take:function(x){return BRIDGE.take.call(this,x)},
-  speed:function(){return {prep:1.95,a:2.15,b:2.15}[this.lv]||2.08},
+  speed:function(){return ({prep:2.1,a:2.31,b:2.31}[this.lv]||2.2)*(1+Math.min(this.got||0,15)*.02)},
   /* ---- פריסה ---- */
   resize:function(){var G=this,land=W>H*1.05,P=RC_BG[land?'W':'T'];G.land=land;G.P=P;
    var s=Math.max(W/P.w,H/P.h)*(land?1.04:1.14),iw=P.w*s,ih=P.h*s;G.bs=s;G.bx=(W-iw)/2;G.by=Math.max(H-ih,Math.min(0,H*(land?.47:.41)-P.hy*s));
