@@ -97,8 +97,8 @@ main{width:100%;position:relative}
 button.go{font:700 17px Heebo,Arial,sans-serif;background:linear-gradient(#7ee07a,#2fa84a);color:#fff;border:2px solid #fff;box-shadow:0 3px 0 #1c7a32,0 0 0 2px #2fa84a;border-radius:999px;padding:9px 26px;cursor:pointer}
 button.ghost{font:700 16px Heebo,Arial,sans-serif;background:none;color:var(--ink);border:2px solid #b8c8d8;border-radius:999px;padding:8px 18px;cursor:pointer}
 button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.fly{animation:fly var(--ft,28s) linear infinite}
-@keyframes fly{0%{opacity:0;transform:translate(0,0)}6%{opacity:1}94%{opacity:1}100%{opacity:0;transform:translate(var(--fx),var(--fy))}}
+.mfly{animation:mfly var(--ft,28s) linear infinite}
+@keyframes mfly{0%{opacity:0;transform:translate(0,0)}6%{opacity:1}94%{opacity:1}100%{opacity:0;transform:translate(var(--fx),var(--fy))}}
 .wl{animation:wl var(--fd,.5s) ease-in-out infinite alternate;transform-origin:0 0}
 .wr{animation:wr var(--fd,.5s) ease-in-out infinite alternate;transform-origin:0 0}
 @keyframes wl{from{transform:rotate(-24deg)}to{transform:rotate(28deg)}}
@@ -140,7 +140,7 @@ body.turning #fxsvg *{animation-play-state:paused!important}
 .fl{will-change:transform}
 #plsvg,#pturn{transition:opacity .14s}
 .wide{display:none}
-@media (min-width:560px) and (min-aspect-ratio:1/1){main{max-width:none}.map{aspect-ratio:auto;height:100vh;height:100dvh;min-height:520px}.tall{display:none}.wide{display:block;filter:blur(1.6px) brightness(.86) saturate(.92)}.ov{filter:blur(1.6px) brightness(.86) saturate(.92)}.fl::before{inset:-16%}}
+@media (min-width:560px) and (min-aspect-ratio:1/1){main{max-width:none}.map{aspect-ratio:auto;height:100vh;height:100dvh}.tall{display:none}.wide{display:block;filter:blur(1.6px) brightness(.86) saturate(.92)}.ov{filter:blur(1.6px) brightness(.86) saturate(.92)}.fl::before{inset:-16%}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <style>
@@ -703,7 +703,7 @@ button.isl:focus,button.isl:focus-visible{outline:none!important}
    var g=document.createElementNS(ns,'g'),q=document.createElementNS(ns,'g'),h=document.createElementNS(ns,'g'),s2=document.createElementNS(ns,'svg'),u=document.createElementNS(ns,'use');
    g.setAttribute('transform','translate('+(dir<0?W+mg:-mg)+' '+y.toFixed(0)+')');
    g.setAttribute('style','opacity:'+B[6]);
-   q.setAttribute('class','fly');q.style.setProperty('--fx',(dir*(W+2*mg)).toFixed(0)+'px');q.style.setProperty('--fy',B[5]+'px');q.style.setProperty('--ft',B[3]+'s');q.style.animationDelay=(-B[3]*B[10]).toFixed(1)+'s';
+   q.setAttribute('class','mfly');q.style.setProperty('--fx',(dir*(W+2*mg)).toFixed(0)+'px');q.style.setProperty('--fy',B[5]+'px');q.style.setProperty('--ft',B[3]+'s');q.style.animationDelay=(-B[3]*B[10]).toFixed(1)+'s';
    h.setAttribute('transform','scale('+(dir<0?k:-k)+' '+k+') translate('+(-FWb[0]*.3)+' '+(-FWb[1]*.62)+')');
    s2.setAttribute('width',FWb[0]);s2.setAttribute('height',FWb[1]);s2.setAttribute('viewBox','0 0 '+FWb[0]+' '+FWb[1]);s2.setAttribute('overflow','hidden');
    u.setAttribute('href','#bst'+vb);u.setAttribute('class',B[8]);u.style.setProperty('--fw',FWb[0]+'px');u.style.setProperty('--fd',B[9]+'s');u.style.animationDelay=(-Math.random()*B[9]).toFixed(2)+'s';
@@ -1028,7 +1028,18 @@ window.LW=(function(){
  var lox=0,loy=0,lpd=30;
  function keepPts(){var p=POS[cur],a=[],k;if(mode==='lib'){var b=LBOX[cur],nn=NAT[cur];return [[b[0]/nn[0],b[1]/nn[1]],[b[2]/nn[0],b[3]/nn[1]]]}
   if(mode==='hub'){for(k in p)if(k!=='L')a.push(p[k])}else{a=p.L.slice();a.push(p.lant)}return a}
- function CQ(q){if(!sw)return q;var x=lox+q[0]*sw,y=loy+q[1]*sh,m=lpd;x=Math.max(m,Math.min(innerWidth-m,x));y=Math.max(m,Math.min(innerHeight-m,y));return [(x-lox)/sw,(y-loy)/sh]}
+ function CQ(q,r){if(!sw)return q;var p=CS(lox+q[0]*sw,loy+q[1]*sh,r);return [(p[0]-lox)/sw,(p[1]-loy)/sh]}
+ /* נקודה על המסך: בתוך השוליים, ולא מתחת לכפתורי הפינות (חזרה/מתנה למעלה משמאל, כוכבים/רמקול למעלה מימין, כפתור הרמה למטה משמאל) */
+ function CS(x,y,r){var W=innerWidth,H=innerHeight;r=r||lpd;var m=Math.max(lpd,r+4);x=Math.max(m,Math.min(W-m,x));y=Math.max(m,Math.min(H-m,y));
+  if(x<72+r&&y<134+r)y=134+r;if(x>W-82-r&&y<110+r)y=110+r;if(x<72+r&&y>H-72-r)y=H-72-r;return [x,y]}
+ function stR(){var v=Math.min(innerWidth,innerHeight)*.15;return Math.max(74,Math.min(130,v))/2}
+ function lanR(){var v=Math.min(innerWidth,innerHeight)*.12;return Math.max(64,Math.min(104,v))/2}
+ /* מיקומי הפנסים על המסך — מרווחים זה מזה ומהכפתורים */
+ var LQ=null;function lanPos(){var r=lanR(),P=POS[cur].L.map(function(q){return CS(lox+q[0]*sw,loy+q[1]*sh,r)}),d=r*2.15;
+  for(var it=0;it<40;it++){var mv=false;for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){var dx=P[j][0]-P[i][0],dy=P[j][1]-P[i][1],L=Math.sqrt(dx*dx+dy*dy)||.01;if(L<d){var k=(d-L)/2/L;if(L<.02){dx=1;dy=0;L=1;k=d/2}P[i][0]-=dx*k;P[i][1]-=dy*k;P[j][0]+=dx*k;P[j][1]+=dy*k;mv=true}}
+   P=P.map(function(a){return CS(a[0],a[1],r)});if(!mv)break}
+  LQ=P.map(function(a){return [(a[0]-lox)/sw,(a[1]-loy)/sh]});return LQ}
+ function LP(i){return (LQ&&LQ[i])||CQ(POS[cur].L[i],lanR())}
  function layout(){cur=SEL();var n=NAT[cur],W=innerWidth,H=innerHeight,cov=Math.max(W/n[0],H/n[1]),s=cov,pts=keepPts(),x0=1,x1=0,y0=1,y1=0,pd=mode==='lib'?8:Math.max(30,Math.min(60,Math.min(W,H)*.07));lpd=pd;
   pts.forEach(function(q){x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1])});
   if(mode==='lib'){if(x1>x0)s=Math.min(s,(W-2*pd)/((x1-x0)*n[0]));if(y1>y0)s=Math.min(s,(H-2*pd)/((y1-y0)*n[1]));s=Math.max(s,Math.min(W/n[0],H/n[1]))}
@@ -1040,14 +1051,15 @@ window.LW=(function(){
   stage.style.cssText='width:'+sw+'px;height:'+sh+'px;left:'+ox+'px;top:'+oy+'px';
   var d=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*d;cv.height=innerHeight*d;g.setTransform(d,0,0,d,0,0);
   if(mode==='hub')buildHub();else if(mode==='lib')libLayout();else placeLanterns()}
- function P2(p){p=CQ(p);return 'left:'+(p[0]*100)+'%;top:'+(p[1]*100)+'%'}
+ function P2(p,r){p=CQ(p,r);return 'left:'+(p[0]*100)+'%;top:'+(p[1]*100)+'%'}
+ function P3(p){return 'left:'+(p[0]*100)+'%;top:'+(p[1]*100)+'%'}
  function toScreen(p){var r=stage.getBoundingClientRect();return [r.left+p[0]*r.width,r.top+p[1]*r.height]}
  /* ---- חצר ---- */
  function buildHub(){var p=POS[cur];stL.innerHTML=
-   '<button class="isS on" data-g="ff" style="'+P2(p.lant)+'" aria-label="גחליליות"><i></i><i class="r2"></i></button>'
-  +'<button class="isS on" data-g="wheel" style="'+P2(p.wheel)+'" aria-label="גלגל המים"><i></i><i class="r2"></i></button>'
-  +'<button class="isS on soon" data-g="bridge" style="'+P2(p.bridge)+'" aria-label="הגשר"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="boss" style="'+P2(p.door)+'" aria-label="טירת השילובים"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="cave" style="'+P2(p.mush)+'" aria-label="מערת הקריסטלים"><i></i><i class="r2"></i></button>'
-  +'<button class="isS on" data-g="cat" style="'+P2(p.cat)+'" aria-label="הזחל הרעב"><i></i><i class="r2"></i></button>'+(RACE_ON?'<button class="isS on" data-g="race" style="'+P2(p.race)+'" aria-label="מרוץ הינשוף"><i></i><i class="r2"></i></button>':'')+'<button class="isS on" data-g="lib" style="'+P2(p.lib)+'" aria-label="הספרייה"><i></i><i class="r2"></i></button>'
+   '<button class="isS on" data-g="ff" style="'+P2(p.lant,stR())+'" aria-label="גחליליות"><i></i><i class="r2"></i></button>'
+  +'<button class="isS on" data-g="wheel" style="'+P2(p.wheel,stR())+'" aria-label="גלגל המים"><i></i><i class="r2"></i></button>'
+  +'<button class="isS on soon" data-g="bridge" style="'+P2(p.bridge,stR())+'" aria-label="הגשר"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="boss" style="'+P2(p.door,stR())+'" aria-label="טירת השילובים"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="cave" style="'+P2(p.mush,stR())+'" aria-label="מערת הקריסטלים"><i></i><i class="r2"></i></button>'
+  +'<button class="isS on" data-g="cat" style="'+P2(p.cat,stR())+'" aria-label="הזחל הרעב"><i></i><i class="r2"></i></button>'+(RACE_ON?'<button class="isS on" data-g="race" style="'+P2(p.race,stR())+'" aria-label="מרוץ הינשוף"><i></i><i class="r2"></i></button>':'')+'<button class="isS on" data-g="lib" style="'+P2(p.lib,stR())+'" aria-label="הספרייה"><i></i><i class="r2"></i></button>'
   +'<button class="isS owl" data-g="owl" style="'+P2(p.owl)+'" aria-label="הינשוף"></button>';
   Array.prototype.forEach.call(stL.querySelectorAll('.isS'),function(b){b.onclick=function(e){e.stopPropagation();var k=b.getAttribute('data-g');
    if(k==='owl')say('שלום! אני הינשוף החכם. בכל מקום שזוהר על האי מחכה משחק. געו בפנסים, ונתחיל!');
@@ -1064,14 +1076,14 @@ window.LW=(function(){
   setTimeout(function(){if(mode==='hub')say('ברוכים הבאים לאי העברית! געו בפנסים הזוהרים כדי להתחיל.')},900)}
  function closeIsle(){stopFF();try{speechSynthesis.cancel()}catch(e){}root.style.display='none';document.body.classList.remove('isleOn')}
  $('isBack').onclick=function(){if(mode==='hub')closeIsle();else if(mode==='ff'){stopFF();mode='pick';curL=-1;$('isEar').style.display='grid';placeLanterns();loop()}else{stopFF();toHub()}};
- function toHub(){mode='hub';night.className='isNight';lanL.innerHTML='';ffL.innerHTML='';$('isEnd').classList.remove('on');$('isEar').style.display='grid';stL.style.display='';libStop();layout()}
+ function toHub(){mode='hub';pend=null;try{speechSynthesis.cancel()}catch(e){}talk(false);night.className='isNight';lanL.innerHTML='';ffL.innerHTML='';$('isEnd').classList.remove('on');$('isEar').style.display='grid';stL.style.display='';libStop();layout()}
  addEventListener('resize',function(){if(root.style.display==='block')layout()});
  /* ---- משחק הגחליליות ---- */
  var st=null,round=0,list=[],flies=[],raf=0,tries=0,busy=false,parts=[],answerKey=null,curL=-1,QN=10,ffStreak=0,ffTok=0;
  function litArr(){return (st&&st.d.lit)||[]}
  function part(){return (st&&st.d.part)||{}}
- function placeLanterns(){var p=POS[cur].L,lit=litArr(),pt=part();lanL.innerHTML=p.map(function(q,i){var on=lit.indexOf(i)>=0,act=i===curL,k=on?1:(act?round:(pt[i]||0))/QN;
-   return '<button class="isL'+(on?' on':'')+(act||(!on&&k>0)?' act':'')+(mode==='pick'&&!on?' pk':'')+'" data-i="'+i+'" style="'+P2(q)+';--k:'+k.toFixed(2)+'" aria-label="פנס"><b></b><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" style="stroke-dashoffset:'+(163*(1-k)).toFixed(1)+'"/></svg></button>'}).join('');
+ function placeLanterns(){var p=lanPos(),lit=litArr(),pt=part();lanL.innerHTML=p.map(function(q,i){var on=lit.indexOf(i)>=0,act=i===curL,k=on?1:(act?round:(pt[i]||0))/QN;
+   return '<button class="isL'+(on?' on':'')+(act||(!on&&k>0)?' act':'')+(mode==='pick'&&!on?' pk':'')+'" data-i="'+i+'" style="'+P3(q)+';--k:'+k.toFixed(2)+'" aria-label="פנס"><b></b><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" style="stroke-dashoffset:'+(163*(1-k)).toFixed(1)+'"/></svg></button>'}).join('');
   Array.prototype.forEach.call(lanL.querySelectorAll('.isL'),function(b){b.onclick=function(e){e.stopPropagation();if(mode!=='pick')return;var i=+b.getAttribute('data-i');if(litArr().indexOf(i)>=0){say('הפנס הזה כבר דולק. בחרו פנס כבוי!');return}playLantern(i)}});
   setFill()}
  function setFill(){if(curL<0)return;var b=lanL.children[curL];if(!b)return;var k=round/QN;b.style.setProperty('--k',k.toFixed(2));var c=b.querySelector('circle');if(c)c.style.strokeDashoffset=(163*(1-k)).toFixed(1)}
@@ -1106,7 +1118,7 @@ window.LW=(function(){
  function choose(f){if(busy||mode!=='ff'||f.state!=='fly')return;ac();
   if(f.o[0]===answerKey[0]){busy=true;chime();if(tries===0){st.d.ok++}persist(st);f.state='go';f.el.classList.add('win');
    flies.forEach(function(o){if(o!==f){o.el.classList.add('out')}});
-   var tgt=toScreen(CQ(POS[cur].L[curL])),sx=f.x,sy=f.y,t0=performance.now();
+   var tgt=toScreen(LP(curL)),sx=f.x,sy=f.y,t0=performance.now();
    var myT=ffTok;(function go(now){var k=Math.min(1,(now-t0)/950),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2,x=sx+(tgt[0]-sx)*e+Math.sin(k*Math.PI)*-60,y=sy+(tgt[1]-sy)*e-Math.sin(k*Math.PI)*80;
     f.el.style.transform='translate('+x+'px,'+y+'px) scale('+(1-.7*e)+')';for(var i=0;i<3;i++)parts.push({x:x,y:y,vx:(Math.random()-.5)*1.2,vy:(Math.random()-.5)*1.2,l:800,b:now,s:1.5+Math.random()*2.5,c:'255,230,140'});
     if(k<1)requestAnimationFrame(go);else{f.el.remove();if(mode!=='ff'||myT!==ffTok)return;round++;st.d.part=st.d.part||{};st.d.part[curL]=round;persist(st);setFill();var lb=lanL.children[curL];if(lb){lb.classList.remove('gulp');void lb.offsetWidth;lb.classList.add('gulp')}
@@ -1115,10 +1127,10 @@ window.LW=(function(){
    if(tries>=2)flies.forEach(function(o){if(o.o[0]===answerKey[0])o.el.classList.add('hint')})}}
  function burst(x,y,n){var now=performance.now();for(var i=0;i<(n||40);i++){var a=Math.random()*6.283,v=1+Math.random()*3.5;parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:900+Math.random()*500,b:now,s:1.5+Math.random()*3,c:['255,230,140','255,200,90','255,250,220'][i%3]})}}
  function lanternDone(){busy=true;ffL.innerHTML='';flies=[];$('isEar').style.display='grid';st.d.lit.push(curL);if(st.d.part)delete st.d.part[curL];persist(st);fanfare();addCoins(10);
-  var tgt=toScreen(CQ(POS[cur].L[curL]));burst(tgt[0],tgt[1],70);var done=curL;curL=-1;mode='pick';placeLanterns();var b=lanL.children[done];if(b){b.classList.add('pop')}
+  var tgt=toScreen(LP(curL));burst(tgt[0],tgt[1],70);var done=curL;curL=-1;mode='pick';placeLanterns();var b=lanL.children[done];if(b){b.classList.add('pop')}
   if(st.d.lit.length>=6){setTimeout(function(){if(night.className.indexOf('on')>=0&&mode!=='hub'&&mode!=='lib')allDone()},900);return}
   say('כל הכבוד! הפנס נדלק, וקיבלתם אבק כוכבים! בחרו את הפנס הבא.');busy=false}
- function allDone(){night.className='isNight on day';var p=POS[cur].L;p.forEach(function(q,i){setTimeout(function(){var s=toScreen(q);burst(s[0],s[1],40)},i*160)});fanfare();
+ function allDone(){night.className='isNight on day';var p=POS[cur].L;p.forEach(function(q,i){setTimeout(function(){var s=toScreen(LP(i));burst(s[0],s[1],40)},i*160)});fanfare();
   say('מדהים! הדלקתם את כל הפנסים, והאי כולו מאיר! הביצה התחממה עוד קצת.');setTimeout(function(){if(night.className.indexOf('day')<0)return;$('isGotN').textContent='+60';$('isEnd').classList.add('on')},2000)}
  $('isAgain').onclick=function(){$('isEnd').classList.remove('on');if(mode==='lib'){libStart();return}ffL.innerHTML='';startFF()};
  $('isHome').onclick=function(){stopFF();toHub()};
