@@ -887,7 +887,7 @@ window.LW=(function(){
      L:[[.075,.24],[.173,.34],[.233,.155],[.636,.415],[.695,.32],[.846,.186]]}
  };
  var SEL=function(){return innerWidth>innerHeight*1.05?'W':'T'};
- var RACE_ON=(function(){try{if(/[?&]race/.test(location.search))localStorage.setItem('lw-race','1');return localStorage.getItem('lw-race')==='1'}catch(e){return false}})();
+ var RACE_ON=true;
  /* ---- צלילים קטנים ---- */
  var AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
  function fxv(){var p=LW.profile();return p&&p.vol?p.vol.fx:.8}
