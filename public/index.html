@@ -890,17 +890,17 @@ window.LW=(function(){
  var RACE_ON=true;
  /* ---- הדלת שבעץ והחצר השנייה ---- */
  var DOOR_NEED=300,DOOR_TEST=/[?&]door=test/.test(location.search),yard=1,dRun=false,dPh=0,dTestOpen=false;
- var IMG2={T:'pics/yard2/bgT.webp',W:'pics/yard2/bgW.webp'};
- var POS2={T:{owl:[.77,.54],door:[.052,.586],swing:[.27,.39],well:[.575,.505],boat:[.45,.583],mill:[.82,.35],log:[.33,.744],falls:[.31,.47],hill:[.78,.43]},
+ var IMG2={T:'pics/yard2/bgT3.webp',W:'pics/yard2/bgW.webp'};
+ var POS2={T:{owl:[.494,.541],door:[.198,.574],swing:[.415,.383],well:[.616,.472],boat:[.648,.583],mill:[.808,.347],log:[.40,.706],falls:[.35,.484],hill:[.75,.49]},
   W:{owl:[.60,.46],door:[.025,.62],swing:[.19,.38],well:[.485,.43],boat:[.29,.55],mill:[.81,.16],log:[.39,.74],falls:[.32,.42],hill:[.78,.35]}};
  /* גודל התמונות של החצר השנייה */
- var NAT2={T:[992,1586],W:[1672,941]};function NATY(){return yard===2&&mode==='hub'?NAT2:NAT}
+ var NAT2={T:[941,1672],W:[1672,941]};function NATY(){return yard===2&&mode==='hub'?NAT2:NAT}
  /* החלק הפנימי (הקשת) של הדלת בחצר הראשונה, בפיקסלים של התמונה */
  var DOORB={W:[450,474,552,592],T:[217,674,302,792]};
  /* הדלת בחצר השנייה (תמיד פתוחה, מובילה חזרה) */
- var DOORB2={W:[4,510,78,662],T:[8,856,96,1006]};
+ var DOORB2={W:[4,510,78,662],T:[130,890,240,1050]};
  /* הינשוף בחצר השנייה: מקור פתוח ועיניים עצומות (מתמלא כשיש ציורים) */
- var OWLM2={W:{src:'pics/yard2/owl_W_m.webp',box:[998,388,1035,426],blink:'pics/yard2/owl_W_b.webp',bbox:[978,370,1060,421]},T:{src:'pics/yard2/owl_T_m.webp',box:[751,822,792,864],blink:'pics/yard2/owl_T_b.webp',bbox:[734,803,812,852]}};
+ var OWLM2={W:{src:'pics/yard2/owl_W_m.webp',box:[998,388,1035,426],blink:'pics/yard2/owl_W_b.webp',bbox:[978,370,1060,421]},T:{src:'pics/yard2/owl_T3_m.webp',box:[449,879,495,921],blink:'pics/yard2/owl_T3_b.webp',bbox:[434,860,515,908]}};
  /* מה הפיה אומרת כשהיא נכנסת לחצר השנייה (מושמע רק כשיש הקלטה מאושרת) */
  var BN_SAY='יֵשׁ! הִגַּעְתִּי גַּם אֲנִי! וָאוּ, אֵיזֶה גַּן קָסוּם! אֲנִי כְּבָר מְחַכָּה לְגַלּוֹת אִתְּכֶם אֵילוּ מִשְׂחָקִים חֲדָשִׁים מְחַכִּים לָנוּ כָּאן!';
  /* מה הינשוף אומר כשנוחתים בפעם הראשונה בחצר השנייה (מושמע רק כשיש הקלטה מאושרת) */
@@ -1044,7 +1044,7 @@ window.LW=(function(){
   try{var f=880*Math.pow(2,(sfTick++%10)/12);tone([f,f*1.5,f*2],.3,'sine',.06,.03)}catch(_){}}
  var lox=0,loy=0,lpd=30;
  function keepPts(){var p=POS[cur],a=[],k;if(mode==='lib'){var b=LBOX[cur],nn=NAT[cur];return [[b[0]/nn[0],b[1]/nn[1]],[b[2]/nn[0],b[3]/nn[1]]]}
-  if(mode==='hub'){if(yard===2){p=POS2[cur];if(cur==='T')p={oR:[.83,.55],owl:p.owl,swing:p.swing,well:p.well,boat:p.boat,log:p.log}}for(k in p)if(k!=='L')a.push(p[k])}else{a=p.L.slice();a.push(p.lant)}return a}
+  if(mode==='hub'){if(yard===2){p=POS2[cur];if(cur==='T')p={dL:[.138,.574],owl:p.owl,swing:p.swing,well:p.well,boat:p.boat,log:p.log,mill:p.mill,falls:p.falls}}for(k in p)if(k!=='L')a.push(p[k])}else{a=p.L.slice();a.push(p.lant)}return a}
  function CQ(q,r){if(!sw)return q;var p=CS(lox+q[0]*sw,loy+q[1]*sh,r);return [(p[0]-lox)/sw,(p[1]-loy)/sh]}
  /* נקודה על המסך: בתוך השוליים, ולא מתחת לכפתורי הפינות (חזרה/מתנה למעלה משמאל, כוכבים/רמקול למעלה מימין, כפתור הרמה למטה משמאל) */
  function CS(x,y,r){var W=innerWidth,H=innerHeight;r=r||lpd;var m=Math.max(lpd,r+4);x=Math.max(m,Math.min(W-m,x));y=Math.max(m,Math.min(H-m,y));
@@ -1110,8 +1110,8 @@ window.LW=(function(){
   var blk=document.createElement('div');blk.className='isDfx';root.appendChild(blk);
   var g2=sfG,t0=performance.now(),last=t0,S=[],P=[],RG=[],tot=0,arr=0,F=0,tb=-1,opened=false,done=false,tick=0,flyS=0,landS=0,FD=null,WP=[];
   /* טסים לתוך הדלת */
-  function fly(D){FD=[D[0],D[1]];var r=stage.getBoundingClientRect();stage.style.transformOrigin=(D[0]-r.left)+'px '+(D[1]-r.top)+'px';stage.style.transition='transform 1.4s cubic-bezier(.45,.05,.75,.55)';void stage.offsetWidth;stage.style.transform='scale(10)';
-   var f=$('isFade');f.style.transition='opacity .4s ease-in .85s';f.style.opacity=1;try{tone([262,330,392,523,659,784,1047],1.5,'sine',.09,.12);tone([110,165],1.6,'triangle',.12,0)}catch(_){}}
+  function fly(D){FD=[D[0],D[1]];var r=stage.getBoundingClientRect();stage.style.transformOrigin=(D[0]-r.left)+'px '+(D[1]-r.top)+'px';stage.style.transition='transform 1.3s cubic-bezier(.45,.05,.75,.55)';void stage.offsetWidth;stage.style.transform='scale(6)';
+   var f=$('isFade');f.style.transition='opacity .4s ease-in .6s';f.style.opacity=1;try{tone([262,330,392,523,659,784,1047],1.5,'sine',.09,.12);tone([110,165],1.6,'triangle',.12,0)}catch(_){}}
   /* נוחתים בחצר החדשה */
   function land(){FD=null;WP=[];yard=2;mode='hub';$('isEar').style.display='none';layout();stage.style.transition='none';stage.style.transformOrigin='50% 50%';stage.style.transform='scale(1.35)';void stage.offsetWidth;stage.style.transition='transform 1.7s cubic-bezier(.2,.7,.3,1)';stage.style.transform='scale(1)';
    var f=$('isFade');f.style.transition='opacity 1.2s';f.style.opacity=0;var w=WH(),RR=Math.min(w[0],w[1]);for(var b=0;b<160;b++)dust(w[0]/2,w[1]*.45,RR*(.8+Math.random()*1.6),true);RG.push({x:w[0]/2,y:w[1]*.45,t:(performance.now()-t0)/1000,R:RR,thin:1});try{fanfare()}catch(_){}
