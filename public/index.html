@@ -2271,7 +2271,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   speed:function(){return {prep:1.9,a:2.1,b:2.1}[this.lv]||2},
   /* ---- פריסה ---- */
   resize:function(){var G=this,land=W>H*1.05,top=Math.max(58,H*.09),pb,cols0,rows0,bx,by,bw,bh;G.land=land;
-   var big=G.lv==='b';
+   var big=false;
    if(land){pb=Math.max(38,Math.min(60,H*.11));var side=pb*3+12+24;bx=side;bw=W-side*2;by=top;bh=H-top*2;cols0=big?13:16;rows0=big?7:9}
    else{pb=Math.max(44,Math.min(62,W*.13));bx=12;bw=W-24;by=top;bh=H-top-(pb*3+12)-28;cols0=big?8:9;rows0=big?10:12}
    var fr=.66,cs=Math.min(bw/(cols0+fr*2),bh/(rows0+fr*2),big?104:96);
@@ -2403,7 +2403,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
    var e=G.started?G.acc:1;if(G.faceT>0){G.faceT-=dt;if(G.faceT<=0)G.face='n'}
    if(G.q&&G.started){G.waitT+=dt;if(G.waitT>22){var tg=G.target();if(tg)tg.hint=true}}
    /* טיפות */
-   for(var i=G.drops.length-1;i>=0;i--){var d=G.drops[i];d.a+=dt;var x=G.cx(d.x),y=G.cy(d.y)+Math.sin(t*2.2+d.b)*cs*.05,R=Math.max(cs*(G.lv==='b'?.56:.5),G.lv==='b'?23:20),s=1,al=1;
+   for(var i=G.drops.length-1;i>=0;i--){var d=G.drops[i];d.a+=dt;var x=G.cx(d.x),y=G.cy(d.y)+Math.sin(t*2.2+d.b)*cs*.05,R=Math.max(cs*.5,20),s=1,al=1;
     if(d.st==='on'){s=Math.min(1,d.a/.35);s=1-Math.pow(1-s,3)*1;s*=1+(d.a<.35?0:.03*Math.sin(t*3+d.b))}
     else if(d.st==='eat'){var hx=G.cx(G.body[0][0]),hy=G.cy(G.body[0][1]),k=Math.min(1,d.a/.25);x+=(hx-x)*k;y+=(hy-y)*k;s=1-k;if(k>=1){d.st='gone'}}
     else if(d.st==='pop'){s=1+d.a*1.2;al=1-d.a/.4;if(al<=0)d.st='gone'}
