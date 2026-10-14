@@ -889,12 +889,16 @@ window.LW=(function(){
  var SEL=function(){return innerWidth>innerHeight*1.05?'W':'T'};
  var RACE_ON=true;
  /* ---- הדלת שבעץ והחצר השנייה ---- */
- var DOOR_NEED=200,DOOR_TEST=/[?&]door=test/.test(location.search),yard=1,dRun=false,dPh=0,dTestOpen=false;
+ var DOOR_NEED=300,DOOR_TEST=/[?&]door=test/.test(location.search),yard=1,dRun=false,dPh=0,dTestOpen=false;
  var IMG2={T:'pics/yard2/bgT.webp',W:'pics/yard2/bgW.webp'};
  var POS2={T:{owl:[.552,.563],door:[.073,.492],swing:[.333,.27],well:[.54,.352],boat:[.40,.457],mill:[.77,.21],sun:[.917,.405],stones:[.83,.54],log:[.32,.703],cart:[.875,.68]},
   W:{owl:[.565,.367],door:[.056,.515],well:[.475,.31],boat:[.32,.455],mill:[.77,.155],swing:[.225,.32],log:[.375,.665],stones:[.725,.5],cart:[.9,.69],sun:[.92,.4]}};
  /* החלק הפנימי (הקשת) של הדלת בחצר הראשונה, בפיקסלים של התמונה */
  var DOORB={W:[450,474,552,592],T:[217,674,302,792]};
+ /* הדלת בחצר השנייה (תמיד פתוחה, מובילה חזרה) */
+ var DOORB2={W:[48,452,137,585],T:[34,762,110,890]};
+ /* מה הינשוף אומר כשנוחתים בפעם הראשונה בחצר השנייה (מושמע רק כשיש הקלטה מאושרת) */
+ var DOOR_SAY='וָאוּ! כָּל הַכָּבוֹד! עֲבַרְתֶּם שָׁלָב, אַתֶּם מִתְקַדְּמִים! אֲסַפְתֶּם שְׁלוֹשׁ מֵאוֹת כּוֹכָבִים, וּבִגְלַל זֶה הַדֶּלֶת הַקְּסוּמָה נִפְתְּחָה בִּשְׁבִילְכֶם. וּכְשֶׁתַּאַסְפוּ שֵׁשׁ מֵאוֹת כּוֹכָבִים... בֵּיצַת הַדְּרָקוֹן תִּהְיֶה אֶצְלְכֶם!';
  /* ---- צלילים קטנים ---- */
  var AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
  function fxv(){var p=LW.profile();return p&&p.vol?p.vol.fx:.8}
@@ -1034,7 +1038,7 @@ window.LW=(function(){
   try{var f=880*Math.pow(2,(sfTick++%10)/12);tone([f,f*1.5,f*2],.3,'sine',.06,.03)}catch(_){}}
  var lox=0,loy=0,lpd=30;
  function keepPts(){var p=POS[cur],a=[],k;if(mode==='lib'){var b=LBOX[cur],nn=NAT[cur];return [[b[0]/nn[0],b[1]/nn[1]],[b[2]/nn[0],b[3]/nn[1]]]}
-  if(mode==='hub'){if(yard===2)p=POS2[cur];for(k in p)if(k!=='L')a.push(p[k])}else{a=p.L.slice();a.push(p.lant)}return a}
+  if(mode==='hub'){if(yard===2){p=POS2[cur];if(cur==='T')p={door:p.door,owl:p.owl,swing:p.swing,well:p.well,boat:p.boat,log:p.log}}for(k in p)if(k!=='L')a.push(p[k])}else{a=p.L.slice();a.push(p.lant)}return a}
  function CQ(q,r){if(!sw)return q;var p=CS(lox+q[0]*sw,loy+q[1]*sh,r);return [(p[0]-lox)/sw,(p[1]-loy)/sh]}
  /* נקודה על המסך: בתוך השוליים, ולא מתחת לכפתורי הפינות (חזרה/מתנה למעלה משמאל, כוכבים/רמקול למעלה מימין, כפתור הרמה למטה משמאל) */
  function CS(x,y,r){var W=innerWidth,H=innerHeight;r=r||lpd;var m=Math.max(lpd,r+4);x=Math.max(m,Math.min(W-m,x));y=Math.max(m,Math.min(H-m,y));
@@ -1078,24 +1082,23 @@ window.LW=(function(){
  /* כמה כוכבים נאספו בסך הכל (גם מה שהוצא בחנות) */
  function earned(){var c=coins().coins||0,sh;try{sh=JSON.parse(localStorage.getItem('lw-shop')||'{}')}catch(e){sh={}}var P={pink:30,turq:30,fly:40,rainbow:50,star:60,crown:80},o=sh.own||{},k;for(k in o)if(o[k]&&P[k])c+=P[k];return c}
  function doorReady(){return !dOpen()&&(DOOR_TEST||earned()>=DOOR_NEED)}
- function dBox(){var b=DOORB[cur],n=NAT[cur];return [b[0]/n[0],b[1]/n[1],(b[2]-b[0])/n[0],(b[3]-b[1])/n[1]]}
- function doorBuild(){var q=dBox(),wp=q[2]*sw,hp=q[3]*sh,open=dOpen()||dPh>=2,el=document.createElement('div');
+ function dBox(){var b=(yard===2?DOORB2:DOORB)[cur],n=NAT[cur];return [b[0]/n[0],b[1]/n[1],(b[2]-b[0])/n[0],(b[3]-b[1])/n[1]]}
+ function doorBuild(){var q=dBox(),wp=q[2]*sw,hp=q[3]*sh,open=yard===2||dOpen()||dPh>=2,el=document.createElement('div');
   el.className='isDoor'+(open?' open':'');el.id='isDoor';el.style.cssText='left:'+(q[0]*100)+'%;top:'+(q[1]*100)+'%;width:'+(q[2]*100)+'%;height:'+(q[3]*100)+'%';
   el.innerHTML='<div class="dClip" style="border-radius:'+(wp/2)+'px '+(wp/2)+'px 3px 3px / '+(wp/2*0.92)+'px '+(wp/2*0.92)+'px 3px 3px"><div class="dBey"></div><div class="dLeaf"></div></div>'+(open?'':'<img class="dLock" alt="" src="pics/yard2/chain.webp" style="width:'+Math.round(wp*1.42)+'px">')+'<button class="dHit" aria-label="הדלת שבעץ"></button>';
   stL.appendChild(el);
   var lf=el.querySelector('.dLeaf');lf.style.backgroundImage='url("'+bg.src+'")';lf.style.backgroundSize=sw+'px '+sh+'px';lf.style.backgroundPosition=(-q[0]*sw)+'px '+(-q[1]*sh)+'px';
-  el.querySelector('.dBey').style.backgroundImage='url("'+IMG2[cur]+'")';
+  el.querySelector('.dBey').style.backgroundImage='url("'+(yard===2?IMG[cur]:IMG2[cur])+'")';
   if(dRun&&dPh>=1){var lk=el.querySelector('.dLock');if(lk)lk.classList.add('chg')}
   el.querySelector('.dHit').onclick=function(e){e.stopPropagation();if(dRun)return;
-   if(dOpen()){enterYard(2);return}
+   if(yard===2){enterYard(1);return}if(dOpen()){enterYard(2);return}
    var lk=el.querySelector('.dLock');if(lk){lk.classList.remove('shk');void lk.offsetWidth;lk.classList.add('shk')}try{tone([147,110],.25,'triangle',.18,.07)}catch(_){}}}
  /* מעבר בין החצרות */
  function enterYard(n){if(dRun)return;pend=null;try{speechSynthesis.cancel()}catch(e){}talk(false);var f=$('isFade');f.style.transition='opacity .45s';f.style.opacity=1;try{tone([523,784,1047,1568],.7,'sine',.09,.06)}catch(_){}
   setTimeout(function(){yard=n;mode='hub';$('isEar').style.display=n===2?'none':'grid';layout();stage.classList.remove('zin');void stage.offsetWidth;stage.classList.add('zin');
    requestAnimationFrame(function(){f.style.transition='opacity 1s';f.style.opacity=0})},470)}
- function buildHub2(){var p=POS2[cur];stL.innerHTML='<button class="isS owl" data-g="owl" style="'+P2(p.owl)+'" aria-label="הינשוף"></button>'
-   +'<button class="isS back2" data-g="back" style="'+P2(p.door,stR())+'" aria-label="חזרה לחצר הראשונה"></button>';
-  Array.prototype.forEach.call(stL.querySelectorAll('.isS'),function(b){b.onclick=function(e){e.stopPropagation();if(b.getAttribute('data-g')==='back')enterYard(1);else pulse(b)}})}
+ function buildHub2(){var p=POS2[cur];stL.innerHTML='<button class="isS owl" data-g="owl" style="'+P2(p.owl)+'" aria-label="הינשוף"></button>';
+  Array.prototype.forEach.call(stL.querySelectorAll('.isS'),function(b){b.onclick=function(e){e.stopPropagation();if(b.getAttribute('data-g')==='back')enterYard(1);else pulse(b)}});doorBuild()}
  /* ---- האפקט הגדול: הכוכבים עפים לתוך הדלת והיא נפתחת ---- */
  function doorFx(){if(dRun)return;dRun=true;dPh=1;pend=null;try{speechSynthesis.cancel()}catch(e){}talk(false);sfInit();sfSize();
   var blk=document.createElement('div');blk.className='isDfx';root.appendChild(blk);
@@ -1105,7 +1108,8 @@ window.LW=(function(){
    var f=$('isFade');f.style.transition='opacity .4s ease-in .85s';f.style.opacity=1;try{tone([262,330,392,523,659,784,1047],1.5,'sine',.09,.12);tone([110,165],1.6,'triangle',.12,0)}catch(_){}}
   /* נוחתים בחצר החדשה */
   function land(){FD=null;WP=[];yard=2;mode='hub';$('isEar').style.display='none';layout();stage.style.transition='none';stage.style.transformOrigin='50% 50%';stage.style.transform='scale(1.35)';void stage.offsetWidth;stage.style.transition='transform 1.7s cubic-bezier(.2,.7,.3,1)';stage.style.transform='scale(1)';
-   var f=$('isFade');f.style.transition='opacity 1.2s';f.style.opacity=0;var w=WH(),RR=Math.min(w[0],w[1]);for(var b=0;b<160;b++)dust(w[0]/2,w[1]*.45,RR*(.8+Math.random()*1.6),true);RG.push({x:w[0]/2,y:w[1]*.45,t:(performance.now()-t0)/1000,R:RR,thin:1});try{fanfare()}catch(_){}}
+   var f=$('isFade');f.style.transition='opacity 1.2s';f.style.opacity=0;var w=WH(),RR=Math.min(w[0],w[1]);for(var b=0;b<160;b++)dust(w[0]/2,w[1]*.45,RR*(.8+Math.random()*1.6),true);RG.push({x:w[0]/2,y:w[1]*.45,t:(performance.now()-t0)/1000,R:RR,thin:1});try{fanfare()}catch(_){}
+   setTimeout(function(){if(yard===2&&window.VO&&VO.find&&VO.find(DOOR_SAY))say(DOOR_SAY)},1600)}
   function WH(){return [innerWidth,innerHeight]}
   function dc(){var q=dBox();return toScreen([q[0]+q[2]/2,q[1]+q[3]*.56])}
   function lockEl(){var d=$('isDoor');return d&&d.querySelector('.dLock')}
