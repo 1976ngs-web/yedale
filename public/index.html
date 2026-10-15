@@ -1055,12 +1055,18 @@ window.LW=(function(){
  function P3(p){return 'left:'+(p[0]*100)+'%;top:'+(p[1]*100)+'%'}
  function toScreen(p){var r=stage.getBoundingClientRect();return [r.left+p[0]*r.width,r.top+p[1]*r.height]}
  /* ---- חצר ---- */
- function buildHub(){var p=POS[cur];stL.innerHTML=
+/* תחנות שנוחתות זו על זו (טלפון לרוחב) — מרחיקים אותן זו מזו, בתוך המסך ומחוץ לכפתורי הפינות */
+ function sepHub(){var bs=Array.prototype.slice.call(stL.querySelectorAll('.isS.on')).filter(function(b){return b.dataset.g!=='owl'});if(bs.length<2)return;var r=stage.getBoundingClientRect();if(!r.width||!r.height)return;var R=stR(),d=R*2*1.08,P=bs.map(function(b){return [r.left+parseFloat(b.style.left)/100*r.width,r.top+parseFloat(b.style.top)/100*r.height]}),moved=false;
+  for(var it=0;it<60;it++){var mv=false;for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){var dx=P[j][0]-P[i][0],dy=P[j][1]-P[i][1],L=Math.sqrt(dx*dx+dy*dy);if(L<d){if(L<.5){dx=1;dy=0;L=1}var k=(d-L)/2/L;P[i][0]-=dx*k;P[i][1]-=dy*k;P[j][0]+=dx*k;P[j][1]+=dy*k;mv=true;moved=true}}
+   for(var q=0;q<P.length;q++)P[q]=CS(P[q][0],P[q][1],R);if(!mv)break}
+  if(!moved)return;bs.forEach(function(b,i){b.style.left=((P[i][0]-r.left)/r.width*100)+'%';b.style.top=((P[i][1]-r.top)/r.height*100)+'%'})}
+  function buildHub(){var p=POS[cur];stL.innerHTML=
    '<button class="isS on" data-g="ff" style="'+P2(p.lant,stR())+'" aria-label="גחליליות"><i></i><i class="r2"></i></button>'
   +'<button class="isS on" data-g="wheel" style="'+P2(p.wheel,stR())+'" aria-label="גלגל המים"><i></i><i class="r2"></i></button>'
   +'<button class="isS on soon" data-g="bridge" style="'+P2(p.bridge,stR())+'" aria-label="הגשר"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="boss" style="'+P2(p.door,stR())+'" aria-label="טירת השילובים"><i></i><i class="r2"></i></button>'+'<button class="isS on" data-g="cave" style="'+P2(p.mush,stR())+'" aria-label="מערת הקריסטלים"><i></i><i class="r2"></i></button>'
   +'<button class="isS on" data-g="cat" style="'+P2(p.cat,stR())+'" aria-label="הזחל הרעב"><i></i><i class="r2"></i></button>'+(RACE_ON?'<button class="isS on" data-g="race" style="'+P2(p.race,stR())+'" aria-label="מרוץ הינשוף"><i></i><i class="r2"></i></button>':'')+'<button class="isS on" data-g="lib" style="'+P2(p.lib,stR())+'" aria-label="הספרייה"><i></i><i class="r2"></i></button>'
   +'<button class="isS owl" data-g="owl" style="'+P2(p.owl)+'" aria-label="הינשוף"></button>';
+  sepHub();
   Array.prototype.forEach.call(stL.querySelectorAll('.isS'),function(b){b.onclick=function(e){e.stopPropagation();var k=b.getAttribute('data-g');
    if(k==='owl')say('שלום! אני הינשוף החכם. בכל מקום שזוהר על האי מחכה משחק. געו בפנסים, ונתחיל!');
    else if(k==='ff')startFF();else if(k==='lib')openLib();else if(k==='cave'&&window.CAVE)CAVE.open();else if(k==='boss'&&window.BOSS)BOSS.open();else if(k==='bridge'&&window.BRIDGE)BRIDGE.open();else if(k==='wheel'&&window.WHEEL)WHEEL.open();else if(k==='cat'&&window.CAT)CAT.open();else if(k==='race'&&window.RACE)RACE.open();else{say('המשחק הזה עוד מתכונן. בינתיים, בואו נדליק את הפנסים!');pulse(b)}}})}
@@ -1089,7 +1095,7 @@ window.LW=(function(){
  function setFill(){if(curL<0)return;var b=lanL.children[curL];if(!b)return;var k=round/QN;b.style.setProperty('--k',k.toFixed(2));var c=b.querySelector('circle');if(c)c.style.strokeDashoffset=(163*(1-k)).toFixed(1)}
  function startFF(){st=store();if(!st.d.lit)st.d.lit=[];if(st.d.lit.length>=6){st.d.lit=[];st.d.part={};st.d.night=(st.d.night||0)+1;persist(st)}
   mode='pick';curL=-1;stL.style.display='none';$('isEnd').classList.remove('on');night.className='isNight on';$('isEar').style.display='grid';try{speechSynthesis.cancel()}catch(e){}
-  layout();loop();setTimeout(function(){say(litArr().length?'בחרו עוד פנס כבוי, ונדליק אותו!':'הלילה ירד, והפנסים כבו! געו בפנס, ונחזיר אליו את הגחליליות.')},700)}
+  layout();loop();setTimeout(function(){if(mode!=='pick')return;say(litArr().length?'בחרו עוד פנס כבוי, ונדליק אותו!':'הלילה ירד, והפנסים כבו! געו בפנס, ונחזיר אליו את הגחליליות.')},700)}
  function playLantern(i){mode='ff';curL=i;answerKey=null;ffTok++;pend=null;st.d.part=st.d.part||{};round=st.d.part[i]||0;list=targets(st,QN);placeLanterns();$('isEar').style.display='grid';
   say('הקשיבו טוב, וגעו בגחלילית הנכונה.',function(){nextRound()})}
  function stopFF(){cancelAnimationFrame(raf);raf=0;ffL.innerHTML='';flies=[];parts=[];g.clearRect(0,0,innerWidth,innerHeight)}
@@ -1789,7 +1795,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function cword(w){var cl=w.match(/[\u05D0-\u05EA][\u0591-\u05C7]*|./g)||[w];return cl.map(function(c,i){return '<span class="xg-cl" style="animation-delay:'+(i*.13).toFixed(2)+'s,'+(i*.13+.6).toFixed(2)+'s">'+c+'</span>'}).join('')}
  function revealSparks(){var cs=document.querySelectorAll('#xgQ .xg-cl');Array.prototype.forEach.call(cs,function(c,i){setTimeout(function(){if(!cur||!c.isConnected)return;var r=c.getBoundingClientRect();for(var k=0;k<9;k++)sp(r.left+r.width/2,r.top+r.height*.45,120,['150,245,235','255,150,215','255,255,255'],k<3);tone([1568+i*90],.18,'sine',.035)},i*130+120)})}
  var CAVE={cls:'xg-cave',QN:20,
-  start:function(){var G=this;G.alive=true;G.st=store('cave');G.lv=lvl();G.round=0;G.lit=0;G.streak=0;G.flash=[];G.drops=[];G.resize();document.body.classList.add('xdark','xcave');
+  start:function(){var G=this;G.alive=true;G.busy=false;G.cur=null;G.st=store('cave');G.lv=lvl();G.round=0;G.lit=0;G.streak=0;G.flash=[];G.drops=[];G.resize();document.body.classList.add('xdark','xcave');
    UI.innerHTML='<div class="xg-panel"><div class="xg-say" id="xgSay"></div><div id="xgQ"></div></div>';
    G.intro=G.lv==='prep'?'החיריק הוא נקודה קטנה מתחת לאות. איפה החיריק? לחצו על האות עם החיריק, וכל חיריק ידליק קריסטל במערה.':G.lv==='b'?'קראו את המילה בעצמכם, ולחצו על הקריסטל עם התמונה המתאימה. כל תשובה נכונה מדליקה קריסטל במערה.':'הקשיבו טוב, ולחצו על הקריסטל עם ההברה הנכונה. כל תשובה נכונה מדליקה קריסטל במערה.';
    G.go=false;var go1=function(){if(G.alive&&!G.go){G.go=true;G.next()}};speak('ברוכים הבאים למערת הקריסטלים!',function(){if(G.alive)speak(G.intro,go1)});setTimeout(go1,20000)},
@@ -2216,7 +2222,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
    G.cards.forEach(function(c,i){setTimeout(function(){if(!G.live(sid)||!c.el)return;var r=c.el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height*.4,10,['255,236,150','255,255,255'],160);tone([880*Math.pow(2,(i%12)/12)],.18,'sine',.035)},i*70)});
    setTimeout(function(){if(!G.live(sid))return;var ow=$('whOwl');ow.classList.add('big');var bx=$('whBox');if(bx)bx.classList.add('fin');(G.scT||[]).forEach(clearTimeout);G.scT=[];G.inScene=true;G.anim=true;var zk=0;G.owl('ob/dv01');setTimeout(function(){if(G.live(sid))G.owl('ob/30-sleep-1')},500);G.zzT=setInterval(function(){if(!G.live(sid)){clearInterval(G.zzT);return}zk=(zk+1)%3;G.owl('ob/30-sleep-'+(zk+1))},900);G.layout();chime();
     for(var q=0;q<60;q++){var o=G.owlR;sp(o[0]+o[2]*Math.random(),o[1]+o[2]*.5,200,['255,255,255','255,200,240','190,240,255','255,236,150'],true)}
-    setTimeout(function(){if(!G.live(sid))return;word('אָח, אֵיזוֹ אַמְבַּטְיָה נְעִימָה! תּוֹדָה רַבָּה!');endButtons(function(){G.fin=false;UI.innerHTML='';G.start()});setTimeout(function(){if(G.live(sid))earn(10)},2200)},1500)},G.cards.length*70+500)}};
+    setTimeout(function(){if(!G.live(sid))return;word('אָח, אֵיזוֹ אַמְבַּטְיָה נְעִימָה! תּוֹדָה רַבָּה!');earn(10);endButtons(function(){G.fin=false;UI.innerHTML='';G.start()})},1500)},G.cards.length*70+500)}};
 
  /* =================== הזחל הרעב (סנייק) =================== */
  var CTP='pics/cat/',CTI={};function ctImg(n){if(!CTI[n]){var im=new Image();im.decoding='async';im.src=CTP+n+'.webp';CTI[n]=im}return CTI[n]}
