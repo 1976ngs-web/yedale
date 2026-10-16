@@ -2921,12 +2921,18 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  var blT=0,tkT=0,bubT=0;
  function blink(){clearTimeout(blT);blT=setTimeout(function(){if(!on)return;ey.classList.add('on');setTimeout(function(){ey.classList.remove('on')},150);if(Math.random()<.18)setTimeout(function(){ey.classList.add('on');setTimeout(function(){ey.classList.remove('on')},140)},330);blink()},2600+Math.random()*2800)}
  function talk(ms){clearInterval(tkT);var st=performance.now();tkT=setInterval(function(){if(performance.now()-st>ms){clearInterval(tkT);mo.classList.add('on');return}mo.classList.toggle('on',Math.random()<.45)},120)}
+ var wv=null,welDone=false,WELT='שלום, אני לילו! ברוכים הבאים לכוכב המספרים! כל כך שמח שבאתם! באתם למצוא את ביצת הדרקון, נכון? כדי להגיע אליה, צריך לפתור תרגילים בכל תחנה. בואו נתחיל!';
+ function stopWel(){if(wv){wv.onended=null;try{wv.pause()}catch(e){}wv=null}clearInterval(tkT);clearTimeout(bubT);$('plBub').classList.remove('on');mo.classList.add('on')}
+ function welcome(){stopWel();var a=wv=new Audio('audio/num_lilo_welcome.mp3'),vv=1;try{vv=LW.profile().vol.voice}catch(e){}if(vv==null)vv=1;a.volume=Math.max(0,Math.min(1,+vv));
+  function end(){if(wv!==a)return;wv=null;clearInterval(tkT);mo.classList.add('on');clearTimeout(bubT);setTimeout(function(){$('plBub').classList.remove('on')},500)}
+  a.onended=end;a.onerror=function(){if(wv===a){wv=null;talk(500)}};
+  bubble(WELT,20000);talk(20000);a.play().catch(function(){bubble(WELT,7000);talk(6000);wv=null})}
  function hop(){mn.classList.remove('hop');void mn.offsetWidth;mn.classList.add('hop')}
  mn.addEventListener('animationend',function(e){if(e.animationName==='plHop')mn.classList.remove('hop')});
- function bubble(t,ms){var b=$('plBub'),r=mn.getBoundingClientRect();b.textContent=t;var x=Math.max(130,Math.min(innerWidth-130,r.left+r.width/2)),y=Math.max(90,r.top-6);b.style.left=x+'px';b.style.top=y+'px';b.classList.add('on');clearTimeout(bubT);bubT=setTimeout(function(){b.classList.remove('on')},ms||2600)}
- mn.onclick=function(e){e.stopPropagation();hop();mo.classList.remove('on');setTimeout(function(){mo.classList.add('on')},900);tone([659,880,1175],.35,'sine',.07,.07)};
+ function bubble(t,ms){var b=$('plBub'),r=mn.getBoundingClientRect();b.textContent=t;var bw=t.length>40?Math.min(innerWidth*.84,340):0;b.style.width=bw?bw+'px':'';var hw=bw?bw/2+8:130;var x=Math.max(hw,Math.min(innerWidth-hw,r.left+r.width/2)),y=Math.max(90,r.top-6);b.style.left=x+'px';b.style.top=y+'px';b.classList.add('on');clearTimeout(bubT);bubT=setTimeout(function(){b.classList.remove('on')},ms||2600)}
+ mn.onclick=function(e){e.stopPropagation();hop();welcome()};
  /* תחנה — המשחקים עוד בבנייה */
- function station(k,b){if(k===1){b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');hop();setTimeout(gopen,260);return}b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');tone([523,659],.3,'sine',.07,.08);hop();bubble('המשחק במספר '+k+' עוד בבנייה!',2400);talk(1200)}
+ function station(k,b){if(k===1){stopWel();b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');hop();setTimeout(gopen,260);return}b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');tone([523,659],.3,'sine',.07,.08);hop();bubble('המשחק במספר '+k+' עוד בבנייה!',2400);talk(1200)}
  /* השער נעול עד 400 כוכבים */
  $('plGate').onclick=function(e){e.stopPropagation();var f=$('plGateFx');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');tone([147,110],.25,'triangle',.18,.07);hop();bubble('השער נפתח ב-'+GATE_NEED+' ★',2400);talk(1000)};
  /* החללית — חזרה למפה */
@@ -2934,8 +2940,8 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  $('plBack').onclick=function(){close(true)};
  function open(){ax();on=true;root.style.display='block';document.body.classList.add('isleOn');$('plCoins').textContent=coins();layout();blink();mo.classList.add('on');
   var f=$('plFade');f.style.transition='none';f.style.opacity=1;var tr=0;(function go(){if(!bg.complete||!bg.naturalWidth){if(tr++<80)return setTimeout(go,50)}requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='opacity 1.1s';f.style.opacity=0})})})();
-  stage.classList.remove('zin');void stage.offsetWidth;stage.classList.add('zin');setTimeout(function(){if(on)hop()},1100)}
- function close(fade){if(!on)return;var f=$('plFade');function end(){on=false;clearTimeout(blT);clearInterval(tkT);root.style.display='none';document.body.classList.remove('isleOn');$('plBub').classList.remove('on')}
+  stage.classList.remove('zin');void stage.offsetWidth;stage.classList.add('zin');setTimeout(function(){if(on){hop();if(!welDone){welDone=true;setTimeout(function(){if(on)welcome()},500)}}},1100)}
+ function close(fade){if(!on)return;stopWel();var f=$('plFade');function end(){on=false;clearTimeout(blT);clearInterval(tkT);root.style.display='none';document.body.classList.remove('isleOn');$('plBub').classList.remove('on')}
   if(!fade){end();return}tone([784,659,523],.4,'sine',.07,.08);f.style.transition='opacity .45s';f.style.opacity=1;setTimeout(function(){end();f.style.transition='none';f.style.opacity=0},470)}
  addEventListener('resize',function(){if(on)layout()});
   /* =================== משחק 1: אתגר המספרים (20 שאלות, 3 רמות) =================== */
