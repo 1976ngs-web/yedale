@@ -2917,16 +2917,43 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  root.addEventListener('pointerdown',function(e){if(!on||e.target.closest('.isBtn,#plMn,#plG'))return;var bs=stL.querySelectorAll('.plS'),best=null,bd=1e9;
   Array.prototype.forEach.call(bs,function(b){var q=b.getBoundingClientRect(),dx=q.left+q.width/2-e.clientX,dy=q.top+q.height/2-e.clientY,d=Math.sqrt(dx*dx+dy*dy);if(d<bd){bd=d;best=b}});
   if(best&&bd<=Math.max(SD*.5,30)+14){e.preventDefault();e.stopPropagation();station(+best.dataset.n,best)}},true);
+ /* תנועת פה לפי הקול עצמו: הפה נפתח כשיש קול ונסגר בהפסקות; אם הקול נתקע — הפה נסגר (לא קופא פתוח) */
+ window.LIPS=window.LIPS||(function(){var C={},ac=null;
+  function env(u){if(C[u])return C[u];var p=C[u]={ok:false};
+   try{var AC=window.AudioContext||window.webkitAudioContext;if(!AC||!window.fetch||!window.XMLHttpRequest)return p;
+    fetch(u).then(function(r){return r.arrayBuffer()}).then(function(b){ac=ac||new AC();ac.decodeAudioData(b,function(buf){
+     var d=buf.getChannelData(0),sr=buf.sampleRate,n=Math.floor(sr*.03),E=[],pk=0;for(var i=0;i+n<=d.length;i+=n){var q=0;for(var j=i;j<i+n;j+=4)q+=d[j]*d[j];q=Math.sqrt(q/(n/4));E.push(q);if(q>pk)pk=q}
+     p.e=E;p.thr=Math.max(.012,pk*.16);p.ok=true},function(){})}).catch(function(){})}catch(e){}return p}
+  function run(a,u,set,alive){var p=env(u),open=false,since=performance.now(),lastT=-1,lastMove=performance.now(),started=false,t0=performance.now(),fb=0;
+   function put(o){if(o!==open){open=o;since=performance.now();set(o)}}
+   set(false);
+   var iv=setInterval(function(){var now=performance.now();if(alive&&!alive()){stop();return}
+    if(a.ended||(started&&a.paused)||(!started&&now-t0>9000)){stop();return}
+    var ct=a.currentTime||0;if(ct!==lastT){if(lastT>=0||ct>0)started=started||ct>0;lastT=ct;lastMove=now}
+    if(!started||a.paused||now-lastMove>220){put(false);return}
+    var el=now-since,want;
+    if(p.ok){var k=Math.floor(ct/.03),v=Math.max(p.e[k]||0,(p.e[k+1]||0)*.7);want=open?v>p.thr*.75:v>p.thr;
+     if(open&&want&&el>170)want=false;else if(!open&&want&&el<55)want=false}
+    else{want=open?el<110+fb:el>=75+fb*.6;if(open!==want)fb=Math.random()*45}
+    if(open&&!want&&el<60)want=true;
+    put(want)},40);
+   function stop(){clearInterval(iv);put(false);iv=0}
+   return {stop:stop}}
+  function beat(ms,set){var open=false,st=performance.now(),since=st,fb=0;set(false);var iv=setInterval(function(){var now=performance.now(),el=now-since;if(now-st>ms){clearInterval(iv);if(open){open=false;set(false)}return}
+    var want=open?el<110+fb:el>=75+fb*.6;if(want!==open){open=want;since=now;fb=Math.random()*45;set(open)}},40);return {stop:function(){clearInterval(iv);if(open){open=false;set(false)}}}}
+  return {env:env,run:run,beat:beat}})();
  /* מנש */
- var blT=0,tkT=0,bubT=0;
+ var blT=0,tkT=0,bubT=0,lip=null;
  function blink(){clearTimeout(blT);blT=setTimeout(function(){if(!on)return;ey.classList.add('on');setTimeout(function(){ey.classList.remove('on')},150);if(Math.random()<.18)setTimeout(function(){ey.classList.add('on');setTimeout(function(){ey.classList.remove('on')},140)},330);blink()},2600+Math.random()*2800)}
- function talk(ms){clearInterval(tkT);var st=performance.now();tkT=setInterval(function(){if(performance.now()-st>ms){clearInterval(tkT);mo.classList.add('on');return}mo.classList.toggle('on',Math.random()<.45)},120)}
+ function moSet(o){mo.classList.toggle('on',!o)}
+ function lipStop(){if(lip){lip.stop();lip=null}mo.classList.add('on')}
+ function talk(ms){lipStop();lip=LIPS.beat(ms,moSet)}
  var wv=null,welDone=false,WELT='שלום, אני לילו! ברוכים הבאים לכוכב המספרים! כל כך שמח שבאתם! באתם למצוא את ביצת הדרקון, נכון? כדי להגיע אליה, צריך לפתור תרגילים בכל תחנה. בואו נתחיל!';
- function stopWel(){if(wv){wv.onended=null;try{wv.pause()}catch(e){}wv=null}clearInterval(tkT);clearTimeout(bubT);$('plBub').classList.remove('on');mo.classList.add('on')}
+ function stopWel(){if(wv){wv.onended=null;try{wv.pause()}catch(e){}wv=null}lipStop();clearTimeout(bubT);$('plBub').classList.remove('on');mo.classList.add('on')}
  function welcome(){stopWel();var a=wv=new Audio('audio/num_lilo_welcome.mp3'),vv=1;try{vv=LW.profile().vol.voice}catch(e){}if(vv==null)vv=1;a.volume=Math.max(0,Math.min(1,+vv));
-  function end(){if(wv!==a)return;wv=null;clearInterval(tkT);mo.classList.add('on');clearTimeout(bubT);setTimeout(function(){$('plBub').classList.remove('on')},500)}
+  function end(){if(wv!==a)return;wv=null;lipStop();clearTimeout(bubT);setTimeout(function(){$('plBub').classList.remove('on')},500)}
   a.onended=end;a.onerror=function(){if(wv===a){wv=null;talk(500)}};
-  talk(20000);a.play().catch(function(){clearInterval(tkT);mo.classList.add('on');wv=null})}
+  lipStop();lip=LIPS.run(a,'audio/num_lilo_welcome.mp3',moSet,function(){return wv===a});a.play().catch(function(){lipStop();wv=null})}
  function hop(){mn.classList.remove('hop');void mn.offsetWidth;mn.classList.add('hop')}
  mn.addEventListener('animationend',function(e){if(e.animationName==='plHop')mn.classList.remove('hop')});
  function bubble(t,ms){var b=$('plBub'),r=mn.getBoundingClientRect();b.textContent=t;var bw=t.length>40?Math.min(innerWidth*.84,340):0;b.style.width=bw?bw+'px':'';var hw=bw?bw/2+8:130;var x=Math.max(hw,Math.min(innerWidth-hw,r.left+r.width/2)),y=Math.max(90,r.top-6);b.style.left=x+'px';b.style.top=y+'px';b.classList.add('on');clearTimeout(bubT);bubT=setTimeout(function(){b.classList.remove('on')},ms||2600)}
@@ -2941,7 +2968,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function open(){ax();on=true;root.style.display='block';document.body.classList.add('isleOn');$('plCoins').textContent=coins();layout();blink();mo.classList.add('on');
   var f=$('plFade');f.style.transition='none';f.style.opacity=1;var tr=0;(function go(){if(!bg.complete||!bg.naturalWidth){if(tr++<80)return setTimeout(go,50)}requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='opacity 1.1s';f.style.opacity=0})})})();
   stage.classList.remove('zin');void stage.offsetWidth;stage.classList.add('zin');setTimeout(function(){if(on){hop();if(!welDone){welDone=true;setTimeout(function(){if(on)welcome()},500)}}},1100)}
- function close(fade){if(!on)return;stopWel();var f=$('plFade');function end(){on=false;clearTimeout(blT);clearInterval(tkT);root.style.display='none';document.body.classList.remove('isleOn');$('plBub').classList.remove('on')}
+ function close(fade){if(!on)return;stopWel();var f=$('plFade');function end(){on=false;clearTimeout(blT);lipStop();root.style.display='none';document.body.classList.remove('isleOn');$('plBub').classList.remove('on')}
   if(!fade){end();return}tone([784,659,523],.4,'sine',.07,.08);f.style.transition='opacity .45s';f.style.opacity=1;setTimeout(function(){end();f.style.transition='none';f.style.opacity=0},470)}
  addEventListener('resize',function(){if(on)layout()});
   /* =================== משחק 1: אתגר המספרים (20 שאלות, 3 רמות) =================== */
@@ -2975,7 +3002,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  +'.plT.ok{animation:plOk .7s cubic-bezier(.3,1.6,.5,1);z-index:2;box-shadow:0 0 0 var(--ol,5px) #fff7d0,0 var(--sh,9px) 0 var(--ol,5px) #2b1850,0 0 40px 14px rgba(255,230,120,.9)}@keyframes plOk{40%{transform:scale(1.14)}}'
  +'.plT.hint{animation:plHint 1.1s ease-in-out infinite}@keyframes plHint{50%{filter:brightness(1.25);box-shadow:0 0 0 var(--ol,5px) #fff7d0,0 var(--sh,9px) 0 var(--ol,5px) #2b1850,0 0 34px 12px rgba(255,240,150,.85)}}'
  +'.plT.out{transition:transform .35s,opacity .35s;transform:scale(.6);opacity:0}'
- +'#plGm,#plGf{position:absolute;z-index:3;pointer-events:none}#plGm>img,#plGf>img,#plGm>.tk{position:absolute;bottom:0;left:50%;height:100%;transform:translateX(-50%);display:none;filter:drop-shadow(0 8px 14px rgba(10,0,40,.45))}#plGm>img.on,#plGf>img.on,#plGm>.tk.on{display:block}'
+ +'#plGm,#plGf{position:absolute;z-index:3;pointer-events:none}#plGm>img,#plGf>img,#plGm>.tk{position:absolute;bottom:0;left:50%;height:100%;transform:translateX(-50%);display:none;filter:drop-shadow(0 8px 14px rgba(10,0,40,.45))}#plGm>img.on,#plGf>img.on,#plGm>.tk.on{display:block}#plGf>img.tf{display:block;opacity:0;will-change:opacity}#plGf>img.tf.on{opacity:1}'
  +'#plGm>.tk{aspect-ratio:291/560}#plGm>.tk img{position:absolute;display:block}#plGm>.tk .b{inset:0;width:100%;height:100%}#plGm>.tk .o{opacity:0}#plGm>.tk .o.on{opacity:1}'
  +'#plGm{display:none}#plGm.on{display:block}#plGm.pop{animation:plPop .7s cubic-bezier(.3,1.6,.5,1)}@keyframes plPop{from{transform:scale(0) rotate(-25deg);opacity:0;filter:brightness(3)}}'
  +'#plGm.gone{animation:plGone .75s cubic-bezier(.5,0,.8,.3) forwards}@keyframes plGone{0%{transform:none}25%{transform:scale(1.12);filter:brightness(1.6)}100%{transform:scale(0) rotate(540deg);opacity:0;filter:brightness(4)}}'
@@ -3016,7 +3043,8 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  root.appendChild(GV);
  var MP=['wave','think','thumb','hope','wow','jump','dance','smirk','yawn'],FP=['up','up2','wink','go','kiss','shy','think','ta','tb','tc','td'];
  $('plGm').innerHTML=MP.map(function(k){return '<img data-k="'+k+'" src="pics/num/mn_'+k+'.webp" alt="">'}).join('')+'<div class="tk" data-k="tk"><img class="b" src="pics/num/mn_base.webp" alt=""><img class="o on" id="plGmo" src="pics/num/mn_mouth.webp" alt="" style="left:'+MOU[0]*100+'%;top:'+MOU[1]*100+'%;width:'+MOU[2]*100+'%;height:'+MOU[3]*100+'%"><img class="o" id="plGme" src="pics/num/mn_eyes.webp" alt="" style="left:'+EYE[0]*100+'%;top:'+EYE[1]*100+'%;width:'+EYE[2]*100+'%;height:'+EYE[3]*100+'%"></div>';
- $('plGf').innerHTML=FP.map(function(k){return '<img data-k="'+k+'" src="pics/num/fy_'+k+'.webp" alt="">'}).join('');
+ $('plGf').innerHTML=FP.map(function(k){return '<img data-k="'+k+'"'+(/^t[a-d]$/.test(k)?' class="tf"':'')+' src="pics/num/fy_'+k+'.webp" alt="">'}).join('');
+ Array.prototype.forEach.call(document.querySelectorAll('#plGf>img,#plGm img,#plMn img'),function(i){try{i.decode&&i.decode().catch(function(){})}catch(e){}});
  function pose(id,k){Array.prototype.forEach.call($(id).children,function(i){i.classList.toggle('on',i.dataset.k===k)})}
  var GC=$('plGcv'),gx=GC.getContext('2d'),PT=[],graf=0,glast=0;
  function gsize(){var d=Math.min(2,devicePixelRatio||1);GC.width=innerWidth*d;GC.height=innerHeight*d;gx.setTransform(d,0,0,d,0,0)}
@@ -3109,7 +3137,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  /* ---- פתיחה: מנש מסביר, נעלם באפקט, והפייה עפה פנימה ---- */
  var SAY={prep:'שלום, אני לילו! סִפרו את הכוכבים או פתרו את התרגיל, ולחצו בתשובה הנכונה. יש 20 שאלות. בהצלחה!',a:'שלום, אני לילו! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!',b:'שלום, אני לילו! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!'};
  var LILO={a:'audio/num_lilo_ab.mp3',b:'audio/num_lilo_ab.mp3',again:'audio/num_lilo_again.mp3'};
- function stopVo(){var a=G.vo;G.vo=null;if(a){a.onended=a.onloadedmetadata=null;try{a.pause()}catch(e){}}}
+ function stopVo(){var a=G.vo;G.vo=null;if(G.lip){G.lip.stop();G.lip=null}var mo0=$('plGmo');if(mo0)mo0.classList.add('on');if(a){a.onended=a.onloadedmetadata=null;try{a.pause()}catch(e){}}}
  function flashAt(c){var f=$('plGflash');f.style.background='radial-gradient(circle at '+c[0]+'px '+c[1]+'px,rgba(255,255,255,.98) 0,rgba(255,232,150,.75) 14%,rgba(200,150,255,.35) 38%,transparent 70%)';f.className='';void f.offsetWidth;f.className='go'}
  function raysOn(c,on){var r=$('plGrays');r.style.left=(c[0]-r.offsetWidth/2)+'px';r.style.top=(c[1]-r.offsetHeight/2)+'px';r.classList.toggle('on',!!on)}
  function ringAt(c,sz){var r=$('plGring'),h=$('plGhalo');r.style.width=r.style.height=sz*.8+'px';r.style.left=(c[0]-sz*.4)+'px';r.style.top=(c[1]-sz*.4)+'px';h.style.width=h.style.height=sz+'px';h.style.left=(c[0]-sz/2)+'px';h.style.top=(c[1]-sz/2)+'px';r.className='';h.className='';void r.offsetWidth;r.className='in';h.className='in'}
@@ -3129,12 +3157,13 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   setTimeout(function(){if(tok!==G.tok||G.leaving)return;orb.className='';m.style.opacity='';m.className='on';void m.offsetWidth;m.classList.add('pop');var c=cen(m);bigBang(c,tok,Math.max(m.offsetWidth,m.offsetHeight)*2.6,true);raysOn(c,false);tone([98,196,1047,1319,1568,2093,2637,3136],1.3,'sine',.1,.05)},3300);
   var txt=G.again?'עוד סיבוב? קדימה, בהצלחה!':SAY[G.L],dur=G.again?2200:Math.max(4800,txt.length*58);
   setTimeout(function(){if(tok!==G.tok||G.leaving)return;pose('plGm','tk');sy.textContent=txt;sy.classList.add('on');var mo=$('plGmo'),me=$('plGme');
-   clearInterval(G.tkI);var st=performance.now(),nb=performance.now()+1500;G.tkI=setInterval(function(){if(tok!==G.tok){clearInterval(G.tkI);return}var t=performance.now();mo.classList.toggle('on',Math.random()<.45||t-st>dur-500);if(t>nb){me.classList.add('on');setTimeout(function(){me.classList.remove('on')},140);nb=t+2600+Math.random()*1800}},120);
+   clearInterval(G.tkI);if(G.lip)G.lip.stop();var mset=function(o){mo.classList.toggle('on',!o)},nb=performance.now()+1500;G.tkI=setInterval(function(){if(tok!==G.tok){clearInterval(G.tkI);return}var t=performance.now();if(t>nb){me.classList.add('on');setTimeout(function(){me.classList.remove('on')},140);nb=t+2600+Math.random()*1800}},120);
    var vf=G.again?LILO.again:LILO[G.L];
-   if(vf){try{var a=new Audio(vf),vv=1;try{vv=LW.profile().vol.voice}catch(e){}if(vv==null)vv=1;a.volume=Math.max(0,Math.min(1,+vv));G.vo=a;dur=20000;
+   if(vf){try{var a=new Audio(vf),vv=1;try{vv=LW.profile().vol.voice}catch(e){}if(vv==null)vv=1;a.volume=Math.max(0,Math.min(1,+vv));G.vo=a;dur=20000;G.lip=LIPS.run(a,vf,mset,function(){return tok===G.tok&&G.vo===a});
     a.onloadedmetadata=function(){if(tok===G.tok&&isFinite(a.duration))dur=a.duration*1000+400};
     a.onended=function(){if(tok!==G.tok)return;clearTimeout(G.sayT);G.sayT=setTimeout(function(){leave(tok)},450)};
-    var pr=a.play();if(pr&&pr.catch)pr.catch(function(){if(tok!==G.tok)return;dur=Math.max(4800,txt.length*58);clearTimeout(G.sayT);G.sayT=setTimeout(function(){leave(tok)},dur)})}catch(e){vf=null}}
+    var pr=a.play();if(pr&&pr.catch)pr.catch(function(){if(tok!==G.tok)return;dur=Math.max(4800,txt.length*58);if(G.lip)G.lip.stop();G.lip=LIPS.beat(dur-500,mset);clearTimeout(G.sayT);G.sayT=setTimeout(function(){leave(tok)},dur)})}catch(e){vf=null}}
+   if(!vf){if(G.lip)G.lip.stop();G.lip=LIPS.beat(dur-500,mset)}
    G.sayT=setTimeout(function(){leave(tok)},vf?30000:dur)},4500);
   G.skipOk=performance.now()+4400}
  function leave(tok){if(tok!==G.tok||!G.intro||G.leaving)return;G.leaving=true;clearTimeout(G.sayT);clearInterval(G.tkI);stopVo();var m=$('plGm'),sy=$('plGsay');sy.classList.remove('on');pose('plGm','jump');m.style.opacity='';
@@ -3148,10 +3177,10 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function tshow(){pose('plGf',TM.e?(TM.m?'tc':'td'):(TM.m?'tb':'ta'))}
  function talkOn(file){var a=G.fv=new Audio(file||'audio/num_fairy_back.mp3');try{var vv=LW.profile().vol.voice;a.volume=Math.max(0,Math.min(1,vv==null?1:+vv))}catch(e){}
   TM.m=0;TM.e=0;tshow();
-  TM.iv=setInterval(function(){var open=(!a.paused&&!a.ended&&a.currentTime>0)?Math.random()<.62:false;if(open!==!!TM.m){TM.m=open?1:0;tshow()}},95);
+  TM.lip=LIPS.run(a,file||'audio/num_fairy_back.mp3',function(o){if((o?1:0)!==TM.m){TM.m=o?1:0;tshow()}},function(){return G.fv===a});
   TM.bl=setInterval(function(){TM.e=1;tshow();setTimeout(function(){TM.e=0;tshow()},140)},2300);
-  a.play().catch(function(){clearInterval(TM.iv);TM.iv=setInterval(function(){TM.m=TM.m?0:1;tshow()},140)})}
- function talkOff(){clearInterval(TM.iv);clearInterval(TM.bl);try{G.fv&&G.fv.pause()}catch(e){}}
+  a.play().catch(function(){if(TM.lip)TM.lip.stop();TM.lip=LIPS.beat(2600,function(o){TM.m=o?1:0;tshow()})})}
+ function talkOff(){if(TM.lip){TM.lip.stop();TM.lip=null}clearInterval(TM.bl);try{G.fv&&G.fv.pause()}catch(e){}}
 
  var ENC=[['audio/num_fairy_e1.mp3','וואו, איזה יופי! אתם מצוינים, תמשיכו ככה!'],['audio/num_fairy_e2.mp3','כל הכבוד לכם! אתם פשוט אלופים!'],['audio/num_fairy_e3.mp3','אני גאה בכם מאוד! עוד קצת ואנחנו שם!']],
   CMF=[['audio/num_fairy_c1.mp3','זה בסדר לטעות, ככה לומדים! בואו ננסה שוב, אני איתכם!'],['audio/num_fairy_c2.mp3','לא נורא בכלל! כולם טועים לפעמים. אני מאמינה בכם!']];
