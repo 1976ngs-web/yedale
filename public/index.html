@@ -62,6 +62,7 @@ main{width:100%;position:relative}
 #balsvg{overflow:visible}
 .map>svg{position:absolute;inset:0;width:100%;height:100%}
 .isl{position:absolute;width:66%;transform:translate(-50%,-50%);background:none;border:0;padding:0;cursor:pointer;outline:none;font:inherit;-webkit-tap-highlight-color:transparent}
+.map,.map *{user-select:none;-webkit-user-select:none}.map img{-webkit-user-drag:none}.map ::selection{background:transparent}
 .fl{position:relative;animation:bob 6s ease-in-out infinite}
 .isl:nth-of-type(2) .fl{animation-delay:-2s}.isl:nth-of-type(3) .fl{animation-delay:-4s}
 @keyframes bob{50%{transform:translateY(-10px)}}
