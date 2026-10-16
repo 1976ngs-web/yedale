@@ -3066,7 +3066,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function fairy(k,ms){var f=$('plGf');if(!f.classList.contains('on'))return;pose('plGf',k);f.classList.remove('bob');void f.offsetWidth;f.classList.add('bob');tone([1047,1319,1568,2093],.4,'sine',.05,.06);var r=f.getBoundingClientRect();spark(r.left+r.width/2,r.top+r.height*.35,22,240);clearTimeout(G.fT);G.fT=setTimeout(function(){if(G.on)pose('plGf','calm')},ms||1600)}
  function cen(el){var r=el.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]}
  /* ---- פתיחה: מנש מסביר, נעלם באפקט, והפייה עפה פנימה ---- */
- var SAY={prep:'שלום, אני מנש! סִפרו את הכוכבים או פתרו את התרגיל, וגעו בתשובה הנכונה. יש 20 שאלות. בהצלחה!',a:'שלום, אני מנש! בכל שאלה יש תרגיל. פתרו אותו וגעו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!',b:'שלום, אני מנש! בכל שאלה יש תרגיל. פתרו אותו וגעו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!'};
+ var SAY={prep:'שלום, אני מנש! סִפרו את הכוכבים או פתרו את התרגיל, ולחצו בתשובה הנכונה. יש 20 שאלות. בהצלחה!',a:'שלום, אני מנש! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!',b:'שלום, אני מנש! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!'};
  function intro(){var m=$('plGm'),sy=$('plGsay'),tok=++G.tok;G.intro=true;GV.classList.add('intro');m.className='on';pose('plGm','wave');glayout();void m.offsetWidth;m.classList.add('pop');
   setTimeout(function(){if(tok!==G.tok)return;var c=cen(m);spark(c[0],c[1],60,380)},120);tone([392,523,659,784,1047],.5,'sine',.07,.07);
   var txt=G.again?'עוד סיבוב? קדימה, בהצלחה!':SAY[G.L],dur=G.again?2200:Math.max(4800,txt.length*58);
