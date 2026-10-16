@@ -2874,7 +2874,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  document.head.appendChild(css);
  var root=document.createElement('div');root.id='planet';root.innerHTML=
   '<div id="plStage"><img id="plBg" alt=""><div id="plGateFx"></div><button class="plHit" id="plShip" aria-label="החללית – חזרה למפה"></button><button class="plHit" id="plGate" aria-label="השער הנעול"></button>'
-  +'<div id="plMn" role="button" aria-label="מנש"><img class="b" src="pics/num/mn_base.webp" alt=""><img class="o" id="plMo" src="pics/num/mn_mouth.webp" alt=""><img class="o" id="plEy" src="pics/num/mn_eyes.webp" alt=""></div><div id="plSt"></div></div>'
+  +'<div id="plMn" role="button" aria-label="לילו"><img class="b" src="pics/num/mn_base.webp" alt=""><img class="o" id="plMo" src="pics/num/mn_mouth.webp" alt=""><img class="o" id="plEy" src="pics/num/mn_eyes.webp" alt=""></div><div id="plSt"></div></div>'
   +'<button class="isBtn isBack" id="plBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>'
   +'<div class="isStar"><span>★</span><b id="plCoins">0</b></div><div id="plBub"></div><div id="plFade"></div>';
  document.body.appendChild(root);
@@ -3066,7 +3066,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function fairy(k,ms){var f=$('plGf');if(!f.classList.contains('on'))return;pose('plGf',k);f.classList.remove('bob');void f.offsetWidth;f.classList.add('bob');tone([1047,1319,1568,2093],.4,'sine',.05,.06);var r=f.getBoundingClientRect();spark(r.left+r.width/2,r.top+r.height*.35,22,240);clearTimeout(G.fT);G.fT=setTimeout(function(){if(G.on)pose('plGf','calm')},ms||1600)}
  function cen(el){var r=el.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]}
  /* ---- פתיחה: מנש מסביר, נעלם באפקט, והפייה עפה פנימה ---- */
- var SAY={prep:'שלום, אני מנש! סִפרו את הכוכבים או פתרו את התרגיל, ולחצו בתשובה הנכונה. יש 20 שאלות. בהצלחה!',a:'שלום, אני מנש! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!',b:'שלום, אני מנש! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!'};
+ var SAY={prep:'שלום, אני לילו! סִפרו את הכוכבים או פתרו את התרגיל, ולחצו בתשובה הנכונה. יש 20 שאלות. בהצלחה!',a:'שלום, אני לילו! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!',b:'שלום, אני לילו! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!'};
  function intro(){var m=$('plGm'),sy=$('plGsay'),tok=++G.tok;G.intro=true;GV.classList.add('intro');m.className='on';pose('plGm','wave');glayout();void m.offsetWidth;m.classList.add('pop');
   setTimeout(function(){if(tok!==G.tok)return;var c=cen(m);spark(c[0],c[1],60,380)},120);tone([392,523,659,784,1047],.5,'sine',.07,.07);
   var txt=G.again?'עוד סיבוב? קדימה, בהצלחה!':SAY[G.L],dur=G.again?2200:Math.max(4800,txt.length*58);
