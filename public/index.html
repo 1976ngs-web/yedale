@@ -1093,7 +1093,7 @@ window.LW=(function(){
  function dState(){var d;try{d=JSON.parse(localStorage.getItem('lw-door')||'{}')}catch(e){d={}}return d}
  function dOpen(){return DOOR_TEST?dTestOpen:!!dState().open}
  /* כמה כוכבים נאספו בסך הכל (גם מה שהוצא בחנות) */
- function earned(){var c=coins().coins||0,sh;try{sh=JSON.parse(localStorage.getItem('lw-shop')||'{}')}catch(e){sh={}}var P={pink:30,turq:30,fly:40,rainbow:50,star:60,crown:80},o=sh.own||{},k;for(k in o)if(o[k]&&P[k])c+=P[k];return c}
+ function earned(){var c=coins().coins||0,sh;try{sh=JSON.parse(localStorage.getItem('lw-shop')||'{}')}catch(e){sh={}}var P={pink:30,turq:30,fly:40,rainbow:50,star:60,crown:80},o=sh.own||{},k;for(k in o)if(o[k]&&P[k])c+=P[k];var nm=0;try{nm=+(localStorage.getItem('lw-num-stars')||0)||0}catch(e){}return Math.max(0,c-nm)}
  function doorReady(){return !dOpen()&&(DOOR_TEST||earned()>=DOOR_NEED)}
  function dBox(){var b=(yard===2?DOORB2:DOORB)[cur],n=(yard===2?NAT2:NAT)[cur];return [b[0]/n[0],b[1]/n[1],(b[2]-b[0])/n[0],(b[3]-b[1])/n[1]]}
  function doorBuild(){var q=dBox(),wp=q[2]*sw,hp=q[3]*sh,open=yard===2||dOpen()||dPh>=2,el=document.createElement('div');
