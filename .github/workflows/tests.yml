@@ -1,0 +1,38 @@
+name: בדיקות אוטומטיות
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [phone, phone-land, desktop]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: התקנה
+        working-directory: tests
+        run: npm ci || npm install
+      - name: דפדפן לבדיקות
+        working-directory: tests
+        run: npx playwright install --with-deps chromium
+      - name: הרצת הבדיקות
+        working-directory: tests
+        env:
+          CI: '1'
+        run: npx playwright test --project=${{ matrix.project }}
+      - name: דוח
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.project }}
+          path: |
+            tests/report
+            tests/results
+          retention-days: 14
