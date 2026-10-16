@@ -2881,7 +2881,10 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  var stage=$('plStage'),bg=$('plBg'),stL=$('plSt'),mn=$('plMn'),ey=$('plEy'),mo=$('plMo'),cur='W',sw=0,sh=0,ox=0,oy=0,on=false;
  [EYE,MOU].forEach(function(b,i){var e=i?mo:ey;e.style.cssText='left:'+b[0]*100+'%;top:'+b[1]*100+'%;width:'+b[2]*100+'%;height:'+b[3]*100+'%'});
  mo.classList.add('on');
- function coins(){try{return (JSON.parse(localStorage.getItem('learn-world')||'{}').coins)||0}catch(e){return 0}}
+ /* כל אי סופר את הכוכבים שלו בנפרד: כאן רק כוכבים שנאספו בכוכב המספרים (השער נפתח לפיהם) */
+ function coins(){try{return +(localStorage.getItem('lw-num-stars')||0)||0}catch(e){return 0}}
+ function earn(n){var c=coins()+n;try{localStorage.setItem('lw-num-stars',String(c))}catch(e){}try{if(window.ISLE&&ISLE.addCoins)ISLE.addCoins(n)}catch(e){}$('plCoins').textContent=c}
+ function gateReady(){return coins()>=GATE_NEED}
  /* צלילים */
  var AX=null;function ax(){if(!AX){try{AX=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AX&&AX.state==='suspended')AX.resume();return AX}
  function fxv(){try{var p=JSON.parse(localStorage.getItem('lw-profile')||'{}');if(p.vol&&p.vol.fx!=null)return +p.vol.fx}catch(e){}return .8}
@@ -2934,8 +2937,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function close(fade){if(!on)return;var f=$('plFade');function end(){on=false;clearTimeout(blT);clearInterval(tkT);root.style.display='none';document.body.classList.remove('isleOn');$('plBub').classList.remove('on')}
   if(!fade){end();return}tone([784,659,523],.4,'sine',.07,.08);f.style.transition='opacity .45s';f.style.opacity=1;setTimeout(function(){end();f.style.transition='none';f.style.opacity=0},470)}
  addEventListener('resize',function(){if(on)layout()});
- addEventListener('lwstars',function(){if(on)setTimeout(function(){$('plCoins').textContent=coins()},2500)});
- window.PLANET={open:open,close:close,_t:{layout:layout}};
+  window.PLANET={open:open,close:close,earn:earn,stars:coins,gateReady:gateReady,_t:{layout:layout}};
 })();
 </script>
 
