@@ -31,12 +31,14 @@ test('ב-400 כוכבים הדלת נפתחת, מובילה לחצר השניי�
   await site.until(() => { try { return JSON.parse(localStorage.getItem('lw-door') || '{}').open; } catch (e) { return false; } }, null, { max: 60000, what: 'door opened' });
   await site.run(15000);
   await site.shot('door-open');
-  await site.until(() => { const d = document.getElementById('isDoor'); return d && d.classList.contains('open'); }, null, { max: 30000, what: 'door drawn open' });
-  await site.tapSel('#isDoor .dHit'); await site.run(4000);
-  await site.until(() => document.querySelector('.isS[data-g="owl"]') && document.querySelector('#isDoor'), null, { what: 'second courtyard' });
+  // after the big effect the child flies straight into the second courtyard
+  await site.until(() => { const st = [...document.querySelectorAll('.isS')].map(e => e.dataset.g); return st.length === 1 && st[0] === 'owl'; }, null, { max: 30000, what: 'second courtyard after the effect' });
   await site.shot('yard2');
   await site.tapSel('#isDoor .dHit'); await site.run(4000);
-  expect(await site.ev(() => !!document.querySelector('.isS[data-g="ff"]')), 'back in the first courtyard').toBe(true);
+  expect(await site.ev(() => !!document.querySelector('.isS[data-g="ff"]')), 'the door leads back to the first courtyard').toBe(true);
+  expect(await site.ev(() => document.getElementById('isDoor').classList.contains('open')), 'and is drawn open there').toBe(true);
+  await site.tapSel('#isDoor .dHit'); await site.run(4000);
+  expect(await site.ev(() => !document.querySelector('.isS[data-g="ff"]') && !!document.querySelector('.isS[data-g="owl"]')), 'and again into the second').toBe(true);
   await page.reload(); await site.run(1500); await site.skipIntro(); await site.enterIsland('heb'); await site.run(3000);
   expect(await site.ev(() => document.getElementById('isDoor').classList.contains('open')), 'still open after reload').toBe(true);
   await noProblems(problems, site);

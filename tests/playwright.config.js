@@ -8,7 +8,7 @@ module.exports = defineConfig({
   fullyParallel: true,
   workers: process.env.CI ? 2 : 3,
   retries: 0,
-  reporter: [['list'], ['html', { open: 'never', outputFolder: 'report' }]],
+  reporter: process.env.CI ? [['github'], ['list'], ['html', { open: 'never', outputFolder: 'report' }]] : [['list'], ['html', { open: 'never', outputFolder: 'report' }]],
   outputDir: 'results',
   use: {
     baseURL: 'http://localhost:' + PORT,
