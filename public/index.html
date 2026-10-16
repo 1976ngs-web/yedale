@@ -3067,14 +3067,21 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function cen(el){var r=el.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]}
  /* ---- פתיחה: מנש מסביר, נעלם באפקט, והפייה עפה פנימה ---- */
  var SAY={prep:'שלום, אני לילו! סִפרו את הכוכבים או פתרו את התרגיל, ולחצו בתשובה הנכונה. יש 20 שאלות. בהצלחה!',a:'שלום, אני לילו! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!',b:'שלום, אני לילו! בכל שאלה יש תרגיל. פתרו אותו ולחצו בכפתור עם התשובה הנכונה. יש 20 שאלות, ובסוף מחכים לכם כוכבים!'};
- function intro(){var m=$('plGm'),sy=$('plGsay'),tok=++G.tok;G.intro=true;GV.classList.add('intro');m.className='on';pose('plGm','wave');glayout();void m.offsetWidth;m.classList.add('pop');
+ var LILO={a:'audio/num_lilo_ab.mp3',b:'audio/num_lilo_ab.mp3',again:'audio/num_lilo_again.mp3'};
+ function stopVo(){var a=G.vo;G.vo=null;if(a){a.onended=a.onloadedmetadata=null;try{a.pause()}catch(e){}}}
+ function intro(){var m=$('plGm'),sy=$('plGsay'),tok=++G.tok;stopVo();G.intro=true;GV.classList.add('intro');m.className='on';pose('plGm','wave');glayout();void m.offsetWidth;m.classList.add('pop');
   setTimeout(function(){if(tok!==G.tok)return;var c=cen(m);spark(c[0],c[1],60,380)},120);tone([392,523,659,784,1047],.5,'sine',.07,.07);
   var txt=G.again?'עוד סיבוב? קדימה, בהצלחה!':SAY[G.L],dur=G.again?2200:Math.max(4800,txt.length*58);
   setTimeout(function(){if(tok!==G.tok)return;pose('plGm','tk');sy.textContent=txt;sy.classList.add('on');var mo=$('plGmo'),me=$('plGme');
    clearInterval(G.tkI);var st=performance.now(),nb=performance.now()+1500;G.tkI=setInterval(function(){if(tok!==G.tok){clearInterval(G.tkI);return}var t=performance.now();mo.classList.toggle('on',Math.random()<.45||t-st>dur-500);if(t>nb){me.classList.add('on');setTimeout(function(){me.classList.remove('on')},140);nb=t+2600+Math.random()*1800}},120);
-   G.sayT=setTimeout(function(){leave(tok)},dur)},900);
+   var vf=G.again?LILO.again:LILO[G.L];
+   if(vf){try{var a=new Audio(vf),vv=1;try{vv=LW.profile().vol.voice}catch(e){}if(vv==null)vv=1;a.volume=Math.max(0,Math.min(1,+vv));G.vo=a;dur=20000;
+    a.onloadedmetadata=function(){if(tok===G.tok&&isFinite(a.duration))dur=a.duration*1000+400};
+    a.onended=function(){if(tok!==G.tok)return;clearTimeout(G.sayT);G.sayT=setTimeout(function(){leave(tok)},450)};
+    var pr=a.play();if(pr&&pr.catch)pr.catch(function(){if(tok!==G.tok)return;dur=Math.max(4800,txt.length*58);clearTimeout(G.sayT);G.sayT=setTimeout(function(){leave(tok)},dur)})}catch(e){vf=null}}
+   G.sayT=setTimeout(function(){leave(tok)},vf?30000:dur)},900);
   G.skipOk=performance.now()+700}
- function leave(tok){if(tok!==G.tok||!G.intro||G.leaving)return;G.leaving=true;clearTimeout(G.sayT);clearInterval(G.tkI);var m=$('plGm'),sy=$('plGsay');sy.classList.remove('on');pose('plGm','jump');
+ function leave(tok){if(tok!==G.tok||!G.intro||G.leaving)return;G.leaving=true;clearTimeout(G.sayT);clearInterval(G.tkI);stopVo();var m=$('plGm'),sy=$('plGsay');sy.classList.remove('on');pose('plGm','jump');
   setTimeout(function(){if(tok!==G.tok)return;var c=cen(m);m.classList.add('gone');tone([1568,1319,1047,784,523],.5,'sine',.07,.05);
    for(var i=0;i<14;i++)(function(i){setTimeout(function(){if(tok===G.tok)spark(c[0]+Math.cos(i)*30,c[1]+Math.sin(i)*40,10,200)},i*45)})(i);
    setTimeout(function(){if(tok!==G.tok)return;spark(c[0],c[1],90,520);m.className='';fairyIn(tok)},700)},350)}
@@ -3105,7 +3112,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   setTimeout(function(){if(!G.on)return;$('plGa').innerHTML='';$('plGq').style.opacity=0;earn(20);$('plGgot').textContent='+20';$('plGend').classList.add('on');var r=$('plGgot').getBoundingClientRect();spark(r.left+r.width/2,r.top+r.height/2,80,380)},1500)}
  function gstart(again){G.tok=(G.tok||0)+1;G.again=!!again;G.leaving=false;clearTimeout(G.sayT);clearInterval(G.tkI);clearTimeout(G.fT);G.L=lv();G.n=G.L==='prep'?4:6;G.S=gstore(G.L);G.list=deck(G.L,G.S);G.i=0;G.first=0;G.streak=0;$('plGend').classList.remove('on');var f=$('plGf');f.classList.remove('on');f.style.transform='';$('plGsay').classList.remove('on');G.intro=true;ask();intro()}
  function gopen(){G.on=true;GV.style.display='block';$('plBub').classList.remove('on');tone([523,784,1047,1568],.6,'sine',.08,.06);gstart()}
- function gclose(){G.on=false;G.tok++;clearTimeout(G.sayT);clearInterval(G.tkI);clearTimeout(G.hT);clearTimeout(G.mT);clearTimeout(G.fT);GV.style.display='none';PT.length=0;$('plCoins').textContent=coins()}
+ function gclose(){G.on=false;G.tok++;stopVo();clearTimeout(G.sayT);clearInterval(G.tkI);clearTimeout(G.hT);clearTimeout(G.mT);clearTimeout(G.fT);GV.style.display='none';PT.length=0;$('plCoins').textContent=coins()}
  $('plGback').onclick=function(e){e.stopPropagation();gclose()};$('plGhome').onclick=function(e){e.stopPropagation();gclose()};$('plGagain').onclick=function(e){e.stopPropagation();gstart(true)};
  GV.addEventListener('pointerdown',function(e){e.stopPropagation()});
  addEventListener('resize',function(){if(G.on)glayout()});
