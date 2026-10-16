@@ -2838,7 +2838,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
 (function(){
  function $(i){return document.getElementById(i)}
  var NAT={W:[1586,992],T:[941,1672]};
- var IMG={W:'pics/num/bgW.webp',T:'pics/num/bgT.webp'};
+ var IMG={W:'pics/num/bgW.webp',T:'pics/num/bgT.webp'};try{['W','T'].forEach(function(x){var im=new Image();im.src=IMG[x]})}catch(e){}
  /* 10 תחנות לאורך השביל (מ-1 למטה, עד 10 ליד השער) */
  var ST={W:[[370,722],[430,660],[510,617],[625,567],[700,525],[1150,595],[1240,553],[1295,505],[1340,458],[1388,407]],
          T:[[443,973],[487,907],[459,835],[410,771],[442,705],[552,660],[602,611],[663,558],[693,517],[680,476]]};
@@ -2932,7 +2932,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  $('plShip').onclick=function(e){e.stopPropagation();close(true)};
  $('plBack').onclick=function(){close(true)};
  function open(){ax();on=true;root.style.display='block';document.body.classList.add('isleOn');$('plCoins').textContent=coins();layout();blink();mo.classList.add('on');
-  var f=$('plFade');f.style.transition='none';f.style.opacity=1;requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='opacity 1.1s';f.style.opacity=0})});
+  var f=$('plFade');f.style.transition='none';f.style.opacity=1;var tr=0;(function go(){if(!bg.complete||!bg.naturalWidth){if(tr++<80)return setTimeout(go,50)}requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='opacity 1.1s';f.style.opacity=0})})})();
   stage.classList.remove('zin');void stage.offsetWidth;stage.classList.add('zin');setTimeout(function(){if(on)hop()},1100)}
  function close(fade){if(!on)return;var f=$('plFade');function end(){on=false;clearTimeout(blT);clearInterval(tkT);root.style.display='none';document.body.classList.remove('isleOn');$('plBub').classList.remove('on')}
   if(!fade){end();return}tone([784,659,523],.4,'sine',.07,.08);f.style.transition='opacity .45s';f.style.opacity=1;setTimeout(function(){end();f.style.transition='none';f.style.opacity=0},470)}
