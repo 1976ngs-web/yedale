@@ -3199,10 +3199,11 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   if(v===q.ans){G.busy=true;clearTimeout(G.hT);b.classList.remove('hint');b.classList.add('ok');var r=b.getBoundingClientRect();spark(r.left+r.width/2,r.top+r.height/2,38,320);
    tone([784,988,1175,1568],.35,'sine',.08,.05);if(!G.wrong){G.first++;G.streak++;delete G.S.d.err[q.k]}else G.streak=0;
    var cheer=G.streak>0&&G.streak%3===0;fairy(cheer?['wink','up2','go','kiss','up'][(G.streak/3-1)%5]:(G.i%2?'up':'up2'),cheer?1900:1100);if(cheer){var fc=cen($('plGf'));spark(fc[0],fc[1],50,380)}
+   if(!G.fairyDone===false&&[2,5,8,9,11,14,17].indexOf(G.i)<0&&G.streak%2===0&&window.VO&&VO.cheer){try{VO.cheer('ok')}catch(e){}}
    Array.prototype.forEach.call($('plGa').children,function(x){if(x!==b)x.classList.add('out')});
    setTimeout(function(){if(!G.on)return;if(G.i===2&&!G.fairyDone){G.fairyDone=true;fairyBig(G.tok);return}if(G.i===9||G.i===14){mile(G.tok,G.i===14);return}if(G.i===5||G.i===8||G.i===11||G.i===17){fspeak(G.tok,function(){G.busy=false;G.i++;ask()});return}G.i++;if(G.i>=G.list.length)finish();else ask()},cheer?1300:950)}
   else{b.classList.add('no');tone([196,147],.3,'triangle',.12,.08);G.wrong++;G.w3=(G.w3||0)+1;G.streak=0;G.S.d.err[q.k]={q:q,n:((G.S.d.err[q.k]||{}).n||0)+1};
-   fairy(G.wrong>=2?'think':'shy',1600);if(G.wrong>=2)hint()}}
+   if(G.wrong===1&&Math.random()<.6&&window.VO&&VO.cheer){try{VO.cheer('try')}catch(e){}}fairy(G.wrong>=2?'think':'shy',1600);if(G.wrong>=2)hint()}}
  function finish(){G.busy=true;var S=G.S;S.d.rounds++;S.d.seen=S.d.seen.concat(G.list.map(function(q){return q.k})).slice(-160);gsave(S);railDraw();$('plGn').textContent='20 מתוך 20';
   var m=$('plGm');m.className='on';glayout();pose('plGm','jump');void m.offsetWidth;m.classList.add('pop');setTimeout(function(){if(G.on){var c=cen(m);spark(c[0],c[1],70,420)}},150);fairy('up2',3200);tone([523,659,784,1047,1319,1568],.9,'sine',.09,.1);
   for(var i=0;i<6;i++)(function(i){setTimeout(function(){if(G.on)spark(innerWidth*(.2+Math.random()*.6),innerHeight*(.2+Math.random()*.4),60,420)},i*260)})(i);
