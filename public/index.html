@@ -2926,15 +2926,15 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
  function welcome(){stopWel();var a=wv=new Audio('audio/num_lilo_welcome.mp3'),vv=1;try{vv=LW.profile().vol.voice}catch(e){}if(vv==null)vv=1;a.volume=Math.max(0,Math.min(1,+vv));
   function end(){if(wv!==a)return;wv=null;clearInterval(tkT);mo.classList.add('on');clearTimeout(bubT);setTimeout(function(){$('plBub').classList.remove('on')},500)}
   a.onended=end;a.onerror=function(){if(wv===a){wv=null;talk(500)}};
-  bubble(WELT,20000);talk(20000);a.play().catch(function(){bubble(WELT,7000);talk(6000);wv=null})}
+  talk(20000);a.play().catch(function(){clearInterval(tkT);mo.classList.add('on');wv=null})}
  function hop(){mn.classList.remove('hop');void mn.offsetWidth;mn.classList.add('hop')}
  mn.addEventListener('animationend',function(e){if(e.animationName==='plHop')mn.classList.remove('hop')});
  function bubble(t,ms){var b=$('plBub'),r=mn.getBoundingClientRect();b.textContent=t;var bw=t.length>40?Math.min(innerWidth*.84,340):0;b.style.width=bw?bw+'px':'';var hw=bw?bw/2+8:130;var x=Math.max(hw,Math.min(innerWidth-hw,r.left+r.width/2)),y=Math.max(90,r.top-6);b.style.left=x+'px';b.style.top=y+'px';b.classList.add('on');clearTimeout(bubT);bubT=setTimeout(function(){b.classList.remove('on')},ms||2600)}
  mn.onclick=function(e){e.stopPropagation();hop();welcome()};
  /* תחנה — המשחקים עוד בבנייה */
- function station(k,b){if(k===1){stopWel();b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');hop();setTimeout(gopen,260);return}b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');tone([523,659],.3,'sine',.07,.08);hop();bubble('המשחק במספר '+k+' עוד בבנייה!',2400);talk(1200)}
+ function station(k,b){stopWel();if(k===1){b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');hop();setTimeout(gopen,260);return}b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');tone([523,659],.3,'sine',.07,.08);hop();bubble('המשחק במספר '+k+' עוד בבנייה!',2400);talk(1200)}
  /* השער נעול עד 400 כוכבים */
- $('plGate').onclick=function(e){e.stopPropagation();var f=$('plGateFx');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');tone([147,110],.25,'triangle',.18,.07);hop();bubble('השער נפתח ב-'+GATE_NEED+' ★',2400);talk(1000)};
+ $('plGate').onclick=function(e){e.stopPropagation();stopWel();var f=$('plGateFx');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');tone([147,110],.25,'triangle',.18,.07);hop();bubble('השער נפתח ב-'+GATE_NEED+' ★',2400);talk(1000)};
  /* החללית — חזרה למפה */
  $('plShip').onclick=function(e){e.stopPropagation();close(true)};
  $('plBack').onclick=function(){close(true)};
@@ -3216,7 +3216,7 @@ b.onclick=function(e){e.stopPropagation();var p=LW.profile();p.level=L[(L.indexO
   for(var i=0;i<6;i++)(function(i){setTimeout(function(){if(G.on)spark(innerWidth*(.2+Math.random()*.6),innerHeight*(.2+Math.random()*.4),60,420)},i*260)})(i);
   setTimeout(function(){if(!G.on)return;$('plGa').innerHTML='';$('plGq').style.opacity=0;earn(20);$('plGgot').textContent='+20';$('plGend').classList.add('on');var r=$('plGgot').getBoundingClientRect();spark(r.left+r.width/2,r.top+r.height/2,80,380);flyStars(G.tok,16)},1500)}
  function gstart(again){G.tok=(G.tok||0)+1;G.again=!!again;G.leaving=false;clearTimeout(G.sayT);clearInterval(G.tkI);clearTimeout(G.fT);G.L=lv();G.n=G.L==='prep'?4:6;G.S=gstore(G.L);G.list=deck(G.L,G.S);G.i=0;G.first=0;G.streak=0;G.fairyDone=false;G.w3=0;G.sp=0;G.fside='r';$('plGf').classList.remove('big','tr','gone2','pop2');G.raysLeft=false;$('plGrays').classList.remove('on');talkOff();GV.classList.remove('fxm');$('plGfx').classList.remove('on');$('plGend').classList.remove('on');var f=$('plGf');f.classList.remove('on');f.style.transform='';$('plGsay').classList.remove('on');G.intro=true;ask();intro()}
- function gopen(){G.on=true;GV.style.display='block';$('plBub').classList.remove('on');tone([523,784,1047,1568],.6,'sine',.08,.06);gstart()}
+ function gopen(){stopWel();G.on=true;GV.style.display='block';$('plBub').classList.remove('on');tone([523,784,1047,1568],.6,'sine',.08,.06);gstart()}
  function gclose(){G.on=false;G.tok++;stopVo();talkOff();clearTimeout(G.sayT);clearInterval(G.tkI);clearTimeout(G.hT);clearTimeout(G.mT);clearTimeout(G.fT);GV.style.display='none';PT.length=0;$('plCoins').textContent=coins()}
  $('plGback').onclick=function(e){e.stopPropagation();gclose()};$('plGhome').onclick=function(e){e.stopPropagation();gclose()};$('plGagain').onclick=function(e){e.stopPropagation();gstart(true)};
  GV.addEventListener('pointerdown',function(e){e.stopPropagation()});
